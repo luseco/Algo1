@@ -61,40 +61,59 @@ bool TegelSpel::leesInSpel (const char* invoernaam)
     string regel;
     int M, N, K, L;
     ifstream invoer;
-    invoer.open("spel1.txt")
+    invoer.open(invoernaam);
 
     if (!invoer){
         return false; 
     }
-    getline( invoer,regel);
+    getline(invoer,regel);
 
     for ( char& c : regel){
-    if ( c != 'g' && c != 'b'){
-    return false;
+      if ( c != 'g' && c != 'b'){
+        return false;
+      }
     }
+
+    
 
     invoer >> M;
     if (M < 1 && M > MaxSchalen){
-    return false; 
+      return false; 
     }
 
     invoer >> N;
     if (N < 1 && N > MaxPerSchaal){
-        return false; 
+      return false; 
     }
 
     invoer >> K;
     if (K < 1 && K  > MaxRijen){
-        return false; 
+      return false; 
     }
 
     invoer >> L;
     if (K < 1 &&  L > MaxPerRij){
-        return false; 
+      return false; 
     }
 
+      
+    vector<pair<char, int>> speler1;
 
-
+    for (int i = 0; i < K*2; i++){
+      getline(invoer, regel);
+      if (regel[0] != 0 && regel[2] != 0) {
+        cout << false;
+      }
+      if (regel[0] == 0 && regel[2] == 0) {
+        speler1.push_back(make_pair(' ', 0));
+      }
+      else if (regel[0] >= 1 && regel[0] <= L) {
+        speler1.push_back(make_pair('g', regel[0]));
+      }
+      else if (regel[0] >= 1 && regel[0] <= L) {
+        speler1.push_back(make_pair('b', regel[2]));
+      }
+    }
    
     invoer.close();
 
