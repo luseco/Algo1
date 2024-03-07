@@ -61,6 +61,8 @@ bool TegelSpel::leesInSpel (const char* invoernaam)
     string regel;
     int M, N, K, L;
     ifstream invoer;
+    vector<pair<char, int>> speler1, speler2;
+
     invoer.open(invoernaam);
 
     if (!invoer){
@@ -74,47 +76,55 @@ bool TegelSpel::leesInSpel (const char* invoernaam)
       }
     }
 
-    
-
     invoer >> M;
-    if (M < 1 && M > MaxSchalen){
+    if (M < 1 || M > MaxSchalen){
       return false; 
     }
 
     invoer >> N;
-    if (N < 1 && N > MaxPerSchaal){
+    if (N < 1 || N > MaxPerSchaal){
       return false; 
     }
 
     invoer >> K;
-    if (K < 1 && K  > MaxRijen){
+    if (K < 1 || K  > MaxRijen){
       return false; 
     }
 
     invoer >> L;
-    if (K < 1 &&  L > MaxPerRij){
+    if (L < 1 ||  L > MaxPerRij){
       return false; 
     }
-
       
-    vector<pair<char, int>> speler1;
+    for (int j = 0; j < 2; j++) {
+      vector<pair<char, int>> *speler = &speler1;
 
-    for (int i = 0; i < K*2; i++){
-      getline(invoer, regel);
-      if (regel[0] != 0 && regel[2] != 0) {
-        cout << false;
+      for (int i = 0; i < K; i++){
+        getline(invoer, regel);
+        if (regel[0] != 0 && regel[2] != 0) {
+          cout << false;
+        }
+        if (regel[0] == 0 && regel[2] == 0) {
+          speler->push_back(make_pair(' ', 0));
+        }
+        else if (regel[0] >= 1 && regel[0] <= L) {
+          speler->push_back(make_pair('g', regel[0]));
+        }
+        else if (regel[0] >= 1 && regel[0] <= L) {
+          speler->push_back(make_pair('b', regel[2]));
+        }
       }
-      if (regel[0] == 0 && regel[2] == 0) {
-        speler1.push_back(make_pair(' ', 0));
-      }
-      else if (regel[0] >= 1 && regel[0] <= L) {
-        speler1.push_back(make_pair('g', regel[0]));
-      }
-      else if (regel[0] >= 1 && regel[0] <= L) {
-        speler1.push_back(make_pair('b', regel[2]));
-      }
+      speler = &speler2;
     }
    
+    for (pair<char, int> i : speler1) {
+      cout << i.first << ' ' << i.second;
+    }
+    for (pair<char, int> i : speler2) {
+      cout << i.first << ' ' << i.second;
+    }
+
+
     invoer.close();
 
   return true;
