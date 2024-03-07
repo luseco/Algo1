@@ -58,8 +58,45 @@ vector< pair <int,int> > TegelSpel::getInhoudRijen (int speler)
 
 bool TegelSpel::leesInSpel (const char* invoernaam)
 {
+    string regel;
+    int M, N, K, L;
+    ifstream invoer;
+    invoer.open("spel1.txt")
 
-  // TODO: implementeer deze memberfunctie
+    if (!invoer){
+        return false; 
+    }
+    getline( invoer,regel);
+
+    for ( char& c : regel){
+    if ( c != 'g' && c != 'b'){
+    return false;
+    }
+
+    invoer >> M;
+    if (M < 1 && M > MaxSchalen){
+    return false; 
+    }
+
+    invoer >> N;
+    if (N < 1 && N > MaxPerSchaal){
+        return false; 
+    }
+
+    invoer >> K;
+    if (K < 1 && K  > MaxRijen){
+        return false; 
+    }
+
+    invoer >> L;
+    if (K < 1 &&  L > MaxPerRij){
+        return false; 
+    }
+
+
+
+   
+    invoer.close();
 
   return true;
 
