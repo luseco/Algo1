@@ -58,75 +58,61 @@ vector< pair <int,int> > TegelSpel::getInhoudRijen (int speler)
 
 bool TegelSpel::leesInSpel (const char* invoernaam)
 {
-    string regel;
-    int M, N, K, L;
-    ifstream invoer;
-    vector<pair<char, int>> speler1, speler2;
+  string regel;
+  int M, N, K, L;
+  int parameters[4];
+  ifstream invoer;
+  vector<pair<char, int>> speler1, speler2;
 
-    invoer.open(invoernaam);
+  invoer.open(invoernaam);
 
-    if (!invoer){
-        return false; 
+  if (!invoer) {
+    return false;
+  }
+  getline(invoer, regel);
+
+  for (char &c : regel) {
+    if (c != 'g' && c != 'b') {
+      return false;
     }
-    getline(invoer,regel);
+  }
+  for (int i = 0; i < 4; i++) {
+    invoer >> parameters[i];
+  }
+  M = parameters[0];
+  N = parameters[1];
+  K = parameters[2];
+  L = parameters[3];
 
-    for ( char& c : regel){
-      if ( c != 'g' && c != 'b'){
+  getline(invoer, regel);
+  for (int j = 0; j < 2; j++) {
+    vector<pair<char, int>> *speler = &speler1;
+    for (int i = 0; i < K; i++) {
+      getline(invoer, regel);
+      cout << regel;
+      if (regel[0] != '0' && regel[2] != '0') {
         return false;
       }
-    }
-
-    invoer >> M;
-    if (M < 1 || M > MaxSchalen){
-      return false; 
-    }
-
-    invoer >> N;
-    if (N < 1 || N > MaxPerSchaal){
-      return false; 
-    }
-
-    invoer >> K;
-    if (K < 1 || K  > MaxRijen){
-      return false; 
-    }
-
-    invoer >> L;
-    if (L < 1 ||  L > MaxPerRij){
-      return false; 
-    }
-      
-    for (int j = 0; j < 2; j++) {
-      vector<pair<char, int>> *speler = &speler1;
-
-      for (int i = 0; i < K; i++){
-        getline(invoer, regel);
-        if (regel[0] != 0 && regel[2] != 0) {
-          cout << false;
-        }
-        if (regel[0] == 0 && regel[2] == 0) {
-          speler->push_back(make_pair(' ', 0));
-        }
-        else if (regel[0] >= 1 && regel[0] <= L) {
-          speler->push_back(make_pair('g', regel[0]));
-        }
-        else if (regel[0] >= 1 && regel[0] <= L) {
-          speler->push_back(make_pair('b', regel[2]));
-        }
+      if (regel[0] == '0' && regel[2] == '0') {
+        speler->push_back(make_pair(' ', 0));
+      } else if (regel[0] >= '1' && regel[0] <= L) {
+        speler->push_back(make_pair('g', regel[0]));
+      } else if (regel[0] >= '1' && regel[0] <= L) {
+        speler->push_back(make_pair('b', regel[2]));
       }
-      speler = &speler2;
     }
-   
-    for (pair<char, int> i : speler1) {
-      cout << i.first << ' ' << i.second;
-    }
-    for (pair<char, int> i : speler2) {
-      cout << i.first << ' ' << i.second;
-    }
+    speler = &speler2;
+  }
 
+  for (pair<char, int> i : speler1) {
+    cout << i.first << " " << i.second << endl;
+  }
+  cout << endl;
+  for (pair<char, int> i : speler2) {
+    cout << i.first << " " << i.second << endl;
+  }
 
-    invoer.close();
-
+  invoer.close();
   return true;
 
 }  // leesInSpel
