@@ -169,8 +169,8 @@ class TegelSpel
     void doeExperiment ();
 
   private:
-    // TODO: uw eigen private memberfuncties en -variabelen
-
+    int M, N, L, K, beurt;
+    vector<pair<char, int>> speler1, speler2;
 };
 
 #endif
