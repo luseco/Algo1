@@ -169,7 +169,10 @@ class TegelSpel
     void doeExperiment ();
 
   private:
+    string pot;
     int M, N, L, K, beurt;
+    int *pars[4] = {&M, &N, &K, &L};
+    const int maxPars[4] = {MaxSchalen, MaxPerSchaal, MaxRijen, MaxPerRij};
     vector<pair<char, int>> speler1, speler2;
 };
 
