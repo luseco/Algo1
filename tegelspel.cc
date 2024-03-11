@@ -73,7 +73,7 @@ bool TegelSpel::leesInSpel (const char* invoernaam)
 
   for (int i = 0; i < 4; i++) {
     invoer >> *pars[i];
-    if(integerInBereik(*pars[i], 1, maxPars[i])) {
+    if(*pars[i] < 1 || *pars[i] > maxPars[i]) {
       return false;
     }
   }
