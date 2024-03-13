@@ -97,7 +97,6 @@ bool TegelSpel::leesInSpel (const char* invoernaam) {
 
 //*************************************************************************
 
-<<<<<<< Updated upstream
 bool TegelSpel::eindstand () { //joelle
 vector< pair <int,int> > inhoudRijen;
 int MaxRij = *pars[2];
@@ -115,14 +114,6 @@ return false;
     // Retourneer:
     // * true, als we een eindstand hebben bereikt
     // * false, als we geen eindstand hebben bereikt
-=======
-bool TegelSpel::eindstand () {
-  vector< pair <int,int> > inhoudRijen;
-  int MaxRij = *pars[2];
-  int speler = 1; 
-  inhoudRijen = getInhoudRijen(speler);
-  return false;
->>>>>>> Stashed changes
 } // eindstand
 
 //*************************************************************************
