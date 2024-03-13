@@ -76,16 +76,16 @@ bool TegelSpel::leesInSpel (const char* invoernaam) {
   }
 
   for (int i = 0; i < M; i++) { //Vult de schalen met de inhoud van de pot
-    schalen.push_back(pot.substr(0, N));
+    schalen.push_back(pot.substr(0, N)); //!!!doet rare dingen wanneer pot te klein
     pot.erase(0, N);
   }
 
   getline(invoer, regel);
-  for (int i = 0; i < K; i++) { //Leest de velden van de spelers in
+  for (int i = 0; i < K; i++) { //Leest de velden van speler 1 in
     getline(invoer, regel);
     speler1.push_back(make_pair(regel[0] - '0', regel[2] - '0'));
   }
-  for (int i = 0; i < K; i++) { //Leest de velden van de spelers in
+  for (int i = 0; i < K; i++) { //Leest de velden van speler 2 in
     getline(invoer, regel);
     speler2.push_back(make_pair(regel[0] - '0', regel[2] - '0'));
   }
@@ -120,27 +120,32 @@ return false;
 
 void TegelSpel::drukAf () {
   if (!isspace(pot[0])) {
-    cout << "Pot:      " << pot << endl;
+    cout << "Pot: " << pot << endl;
   }
   else {
-    cout << "Pot:      Leeg" << endl;
+    cout << "Pot: Leeg" << endl;
   }
 
   int i = 1;
+  cout << "Schalen:" << endl;
   for (string& schaal : schalen) {
-    cout << "Schaal " << i++ << ": " << sortSchaal(schaal) << endl;
+    cout <<i++ << ": " << sortSchaal(schaal) << "  ";
   }
 
-  cout << endl << "Speler 1    Speler 2" << endl 
-               << "--------    --------" << endl;
+  cout << "\n\n" << "   Speler 1    Speler 2" << endl
+                 << "   --------    --------" << endl;
   for (int j = 0; j < K; j++) {
-    cout << j + 1 << ": " 
+    cout << j + 1 << "| " 
          << string(speler1[j].first, 'g') 
          << string(speler1[j].second, 'b')
-         << string(6 - speler1[j].first - speler1[j].second + 3, ' ');
+         << string(K - speler1[j].first - speler1[j].second, '#')
+         << string(MaxPerRij - K + 6, ' ');
     cout << string(speler2[j].first, 'g') 
-         << string(speler2[j].second, 'b') << endl;
+         << string(speler2[j].second, 'b') 
+         << string(K - speler2[j].first - speler2[j].second, '#') << endl;
   }
+
+  cout << endl << "Aan de beurt: Speler " << beurt + 1 << endl;
 }  // drukAf
 
 //*************************************************************************
