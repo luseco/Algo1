@@ -101,13 +101,15 @@ void doeSpel (TegelSpel *s1)
   pair<int,char> zet;
   vector < pair <int,char> > zetten;  // de mogelijke zetten
   long long aantalStanden;  // aantal bekeken standen bij aanroep besteScore
-
+  
   schalen = s1->getSchalen();
+
 
   keuze = 0;
   while (keuze!=8)
   {
     s1 -> drukAf ();
+    s1 ->eindstand();
 
     keuze = keuzeUitMenu ();
 

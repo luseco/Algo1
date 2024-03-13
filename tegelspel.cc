@@ -58,7 +58,6 @@ vector< pair <int,int> > TegelSpel::getInhoudRijen (int speler) {
   if (speler == 2) {
     return speler2;
   }
-
   return inhoudRijen;
 }  // getInhoudRijen
 
@@ -103,9 +102,11 @@ bool TegelSpel::leesInSpel (const char* invoernaam) {
 //*************************************************************************
 
 bool TegelSpel::eindstand () { //joelle
-  // TODO: implementeer deze memberfunctie
+vector< pair <int,int> > inhoudRijen;
+int MaxRij = *pars[2];
+int speler = 1; 
+inhoudRijen = getInhoudRijen(speler);
 
-  return false;
 
 } // eindstand
 
@@ -118,11 +119,41 @@ void TegelSpel::drukAf () {
 //*************************************************************************
 
 vector< pair<int,char> > TegelSpel::bepaalVerschillendeZetten () { //joelle
-  vector< pair<int,char> > zetten;
+    vector<pair<int, char>> zetten;
+    vector<pair<int, int>> inhoudSchalen = {
+        make_pair(4, 0),
+        make_pair(2, 3),
+        make_pair(1, 1)
+    };
 
-  // TODO: implementeer deze memberfunctie
+    bool verschillend = false;
+    bool geldig = true;
 
-  return zetten;
+    for (const auto& s : inhoudSchalen) {
+        cout << s.first << " " << s.second << endl;
+        if ((s.first != s.second) || (s.first != 0 && s.second != 0)) {
+            verschillend = true;
+        }
+    }//verschillend
+
+
+     /*
+    als zetten ( int char) -> char is niet in retstring 
+    zetten ( int char) if if char is g inhoudrij.first +int > N enn 
+    if char is binhoudrij.second + int > N
+    }
+}*/
+
+
+// Bepaal alle verschillende, geldige zetten (schaal,kleur) in de huidige
+    // stand.
+    // Een zet met een kleur die niet voorkomt op de schaal is niet geldig.
+    // Een zet met een kleur die vaker voorkomt op de schaal dan de speler
+    // in een rij kwijt kan, is niet geldig.
+    // Retourneer:
+    // * Een vector met alle verschillende geldige zetten (schaal,kleur);
+    //   de volgorde van de zetten maakt niet uit.
+return zetten;
 
 }  // bepaalVerschillendeZetten
 
