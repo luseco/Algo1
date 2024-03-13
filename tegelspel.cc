@@ -107,7 +107,17 @@ int MaxRij = *pars[2];
 int speler = 1; 
 inhoudRijen = getInhoudRijen(speler);
 
-
+for (const auto& rij : inhoudRijen) {
+    int eerste = rij.first; 
+    int tweede = rij.second;
+    if ( eerste == MaxRij || tweede == MaxRij){
+        return true;
+    }//schalen in een array pair ztten want ze moeten genummerd worden van 0 -> m-1
+}
+return false;
+    // Retourneer:
+    // * true, als we een eindstand hebben bereikt
+    // * false, als we geen eindstand hebben bereikt
 } // eindstand
 
 //*************************************************************************
@@ -126,35 +136,24 @@ vector< pair<int,char> > TegelSpel::bepaalVerschillendeZetten () { //joelle
         make_pair(1, 1)
     };
 
-    bool verschillend = false;
+    bool verschillend = true;
     bool geldig = true;
 
     for (const auto& s : inhoudSchalen) {
-        cout << s.first << " " << s.second << endl;
-        if ((s.first != s.second) || (s.first != 0 && s.second != 0)) {
+        if ((s.first != s.second) || (s.first != '0' && s.second != '0')) {
             verschillend = true;
         }
     }//verschillend
 
 
-     /*
-    als zetten ( int char) -> char is niet in retstring 
-    zetten ( int char) if if char is g inhoudrij.first +int > N enn 
-    if char is binhoudrij.second + int > N
+for (int i = 0; i < 10; i++) {
+        pair<int, char> nieuwPaar = make_pair(i, 'g');
+        pair<int, char> Paar = make_pair(i, 'b');
+        zetten.push_back(nieuwPaar);
+        zetten.push_back(Paar);
     }
-}*/
 
-
-// Bepaal alle verschillende, geldige zetten (schaal,kleur) in de huidige
-    // stand.
-    // Een zet met een kleur die niet voorkomt op de schaal is niet geldig.
-    // Een zet met een kleur die vaker voorkomt op de schaal dan de speler
-    // in een rij kwijt kan, is niet geldig.
-    // Retourneer:
-    // * Een vector met alle verschillende geldige zetten (schaal,kleur);
-    //   de volgorde van de zetten maakt niet uit.
 return zetten;
-
 }  // bepaalVerschillendeZetten
 
 //*************************************************************************
