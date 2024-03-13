@@ -7,23 +7,18 @@
 
 //*************************************************************************
 
-TegelSpel::TegelSpel () {
-  // TODO: implementeer zo nodig deze constructor
-
-}  // default constructor
+TegelSpel::TegelSpel () {}  // default constructor
 
 //*************************************************************************
 
-int TegelSpel::getSchalen () { //joelles
-  return *pars[1];
+int TegelSpel::getSchalen () {
+  return M;
 }  // getSchalen
 
 //*************************************************************************
 
-string TegelSpel::getPot () { //joelle
-  string retString;
-  pot = retString;
-  return retString;
+string TegelSpel::getPot () {
+  return pot;
 }  // getPot
 
 //*************************************************************************
@@ -58,6 +53,7 @@ vector<pair<int, int>> TegelSpel::getInhoudRijen (int speler) {
   if (speler == 2) {
     return speler2;
   }
+
   return inhoudRijen;
 }  // getInhoudRijen
 
@@ -79,7 +75,7 @@ bool TegelSpel::leesInSpel (const char* invoernaam) {
     invoer >> *pars[i];
   }
 
-  for (int i = 0; i < M; i++) {
+  for (int i = 0; i < M; i++) { //Vult de schalen met de inhoud van de pot
     schalen.push_back(pot.substr(0, N));
     pot.erase(0, N);
   }
@@ -101,6 +97,7 @@ bool TegelSpel::leesInSpel (const char* invoernaam) {
 
 //*************************************************************************
 
+<<<<<<< Updated upstream
 bool TegelSpel::eindstand () { //joelle
 vector< pair <int,int> > inhoudRijen;
 int MaxRij = *pars[2];
@@ -118,24 +115,46 @@ return false;
     // Retourneer:
     // * true, als we een eindstand hebben bereikt
     // * false, als we geen eindstand hebben bereikt
+=======
+bool TegelSpel::eindstand () {
+  vector< pair <int,int> > inhoudRijen;
+  int MaxRij = *pars[2];
+  int speler = 1; 
+  inhoudRijen = getInhoudRijen(speler);
+  return false;
+>>>>>>> Stashed changes
 } // eindstand
 
 //*************************************************************************
 
 void TegelSpel::drukAf () {
-  if (pot != "") {
-    cout << "Pot: " << pot << endl;
+  if (!isspace(pot[0])) {
+    cout << "Pot:      " << pot << endl;
   }
+  else {
+    cout << "Pot:      Leeg" << endl;
+  }
+
   int i = 1;
   for (string& schaal : schalen) {
-    cout << "Schaal " << i << ": " << sortSchaal(schaal) << endl;
-    i++;
+    cout << "Schaal " << i++ << ": " << sortSchaal(schaal) << endl;
+  }
+
+  cout << endl << "Speler 1    Speler 2" << endl 
+               << "--------    --------" << endl;
+  for (int j = 0; j < K; j++) {
+    cout << j + 1 << ": " 
+         << string(speler1[j].first, 'g') 
+         << string(speler1[j].second, 'b')
+         << string(6 - speler1[j].first - speler1[j].second + 3, ' ');
+    cout << string(speler2[j].first, 'g') 
+         << string(speler2[j].second, 'b') << endl;
   }
 }  // drukAf
 
 //*************************************************************************
 
-vector< pair<int,char> > TegelSpel::bepaalVerschillendeZetten () { //joelle
+vector< pair<int,char> > TegelSpel::bepaalVerschillendeZetten () {
     vector<pair<int, char>> zetten;
     vector<pair<int, int>> inhoudSchalen = {
         make_pair(4, 0),
