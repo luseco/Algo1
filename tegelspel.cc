@@ -14,20 +14,16 @@ TegelSpel::TegelSpel () {
 
 //*************************************************************************
 
-int TegelSpel::getSchalen () { //joelle
-  // TODO: implementeer deze memberfunctie
-  return 0;
-
+int TegelSpel::getSchalen () { //joelles
+  return *pars[1];
 }  // getSchalen
 
 //*************************************************************************
 
 string TegelSpel::getPot () { //joelle
   string retString;
-
-  // TODO: implementeer deze memberfunctie
+  pot = retString;
   return retString;
-
 }  // getPot
 
 //*************************************************************************
