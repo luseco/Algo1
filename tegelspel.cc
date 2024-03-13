@@ -64,10 +64,10 @@ bool TegelSpel::leesInSpel (const char* invoernaam)
   if (!invoer) {
     return false;
   }
+
   getline(invoer, regel);
-  cout << "Check";
-  for (char &c : regel) {
-    if (c != 'g' && c != 'b') {
+  for (char& c : regel) {
+    if (c != 'b' && c != 'g' && !isspace(c)) {
       return false;
     }
   }
@@ -103,15 +103,6 @@ bool TegelSpel::leesInSpel (const char* invoernaam)
       }
   }
   invoer >> beurt;
-
-  for (pair<char, int> i : speler1) {
-    cout << i.first << " " << i.second << endl;
-  }
-  for (pair<char, int> i : speler2) {
-    cout << i.first << " " << i.second << endl;
-  }
-  cout << beurt << endl;
-
   invoer.close();
   return true;
 }  // leesInSpel
