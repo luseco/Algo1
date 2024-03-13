@@ -15,7 +15,7 @@ TegelSpel::TegelSpel () {
 //*************************************************************************
 
 int TegelSpel::getSchalen () { //joelles
-  return *pars[1];
+  return *pars[0];
 }  // getSchalen
 
 //*************************************************************************
@@ -102,17 +102,16 @@ bool TegelSpel::leesInSpel (const char* invoernaam) {
 //*************************************************************************
 
 bool TegelSpel::eindstand () { //joelle
-vector< pair <int,int> > inhoudRijen;
+    int speler =1;
+vector< pair <int,int> > inhoudRijen = getInhoudRijen(speler);
 int MaxRij = *pars[2];
-int speler = 1; 
-inhoudRijen = getInhoudRijen(speler);
 
 for (const auto& rij : inhoudRijen) {
     int eerste = rij.first; 
     int tweede = rij.second;
     if ( eerste == MaxRij || tweede == MaxRij){
         return true;
-    }//schalen in een array pair ztten want ze moeten genummerd worden van 0 -> m-1
+    }//schalen in een pair ztten want ze moeten genummerd worden van 0 -> m-1
 }
 return false;
     // Retourneer:
@@ -136,32 +135,38 @@ void TegelSpel::drukAf () {
 //*************************************************************************
 
 vector< pair<int,char> > TegelSpel::bepaalVerschillendeZetten () { //joelle
-    vector<pair<int, char>> zetten;
-    vector<pair<int, int>> inhoudSchalen = {
-        make_pair(4, 0),
-        make_pair(2, 3),
-        make_pair(1, 1)
-    };
+     vector<pair<int, char>> zetten;
+    int MaxRij = *pars[2];
+    vector<pair<int, int>> inhoudSchalen = getInhoudSchalen();
+    int speler = 1;
+    vector<pair<int, int>> inhoudRijen = getInhoudRijen(speler);
+    bool verschillend = false, geldig = true;
 
-    bool verschillend = true;
-    bool geldig = true;
-
-    for (const auto& s : inhoudSchalen) {
-        if ((s.first != s.second) || (s.first != '0' && s.second != '0')) {
+    for (const auto& schaal : inhoudSchalen) {
+        cout << schaal.first << " " << schaal.second << endl;
+        if ((schaal.first != schaal.second) || (schaal.first != 0 && schaal.second != 0)) {
             verschillend = true;
         }
-    }//verschillend
-
-
-for (int i = 0; i < 10; i++) {
-        pair<int, char> nieuwPaar = make_pair(i, 'g');
-        pair<int, char> Paar = make_pair(i, 'b');
-        zetten.push_back(nieuwPaar);
-        zetten.push_back(Paar);
     }
 
-return zetten;
-}  // bepaalVerschillendeZetten
+    for (const auto& rij : inhoudRijen) {
+        if ((rij.second == 'g' && (rij.first > MaxRij)) ||
+            (rij.second == 'b' && (rij.first > MaxRij))) {
+            geldig = false;
+            cout << rij.first << " " << rij.second << endl;
+        }
+    }
+
+    if (verschillend && geldig) {
+        for (const auto& schaal : inhoudSchalen) {
+            zetten.push_back(pair<int, char>(schaal.first, 'g'));
+            zetten.push_back(pair<int, char>(schaal.first, 'b'));
+        }
+    }
+
+    return zetten;
+}
+    
 
 //*************************************************************************
 
