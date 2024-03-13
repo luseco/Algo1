@@ -90,7 +90,8 @@ bool TegelSpel::leesInSpel (const char* invoernaam) {
     speler2.push_back(make_pair(regel[0] - '0', regel[2] - '0'));
   }
   invoer >> beurt; //Leest welke speler aan de beurt is in
-  
+  beurt++;
+
   invoer.close();
   return true;
 }  // leesInSpel
@@ -145,7 +146,7 @@ void TegelSpel::drukAf () {
          << string(K - speler2[j].first - speler2[j].second, '#') << endl;
   }
 
-  cout << endl << "Aan de beurt: Speler " << beurt + 1 << endl;
+  cout << endl << "Aan de beurt: Speler " << beurt << endl;
 }  // drukAf
 
 //*************************************************************************
@@ -181,10 +182,30 @@ return zetten;
 //*************************************************************************
 
 bool TegelSpel::doeZet (int schaal, char kleur) { //ibraheem
-  // TODO: implementeer deze memberfunctie
+  bool geldig = true;
+  pair<int, char> zet = make_pair(schaal, kleur);
 
-  return true;
+  if (schaal < 1 || schaal > M) {
+    geldig = false;
+  }
+  else if (!schalen[schaal - 1].constains(kleur)) {
+    geldig = false;
+  }
+  else {
+    for (pair<int, char>& mogelijk : bepaalVerschillendeZetten()) {
+      geldig = false;
+      if (zet == mogelijk) {
+        geldig = true;
+        break;
+      }
+    }
+  }
+  
+  if (geldig) {
+    return true;
+  }
 
+  return geldig;
 }  // doeZet
 
 //*************************************************************************

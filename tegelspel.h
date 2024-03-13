@@ -3,7 +3,6 @@
 #ifndef TegelSpelHVar  // voorkom dat dit bestand meerdere keren
 #define TegelSpelHVar  // ge-include wordt
 
-#include <fstream>
 #include <vector>
 #include <string>
 #include "constantes.h"
