@@ -49,8 +49,8 @@ vector< pair <int,int> > TegelSpel::getInhoudSchalen () {
 
 //*************************************************************************
 
-vector< pair <int,int> > TegelSpel::getInhoudRijen (int speler) {
-  vector< pair <int,int> > inhoudRijen;
+vector<pair<int, int>> TegelSpel::getInhoudRijen (int speler) {
+  vector<pair<int, int>> inhoudRijen;
 
   if (speler == 1) {
     return speler1;
@@ -75,13 +75,13 @@ bool TegelSpel::leesInSpel (const char* invoernaam) {
   getline(invoer, regel);
   pot = regel; //Leest de pot in
 
+  for (int i = 0; i < 4; i++) { //Leest de data van het spel in
+    invoer >> *pars[i];
+  }
+
   for (int i = 0; i < M; i++) {
     schalen.push_back(pot.substr(0, N));
     pot.erase(0, N);
-  }
-
-  for (int i = 0; i < 4; i++) { //Leest de data van het spel in
-    invoer >> *pars[i];
   }
 
   getline(invoer, regel);
@@ -113,7 +113,14 @@ inhoudRijen = getInhoudRijen(speler);
 //*************************************************************************
 
 void TegelSpel::drukAf () {
-  
+  if (pot != "") {
+    cout << "Pot: " << pot << endl;
+  }
+  int i = 1;
+  for (string& schaal : schalen) {
+    cout << "Schaal " << i << ": " << sortSchaal(schaal) << endl;
+    i++;
+  }
 }  // drukAf
 
 //*************************************************************************
@@ -212,3 +219,56 @@ void TegelSpel::doeExperiment () {
 
 }  // doeExperiment
 
+//*************************************************************************
+
+bool TegelSpel::checkFormat(const char* invoernaam) {//Checkt de format van een bestand
+  ifstream invoer;
+  string regel;
+  int getal;
+
+  invoer.open(invoernaam);
+  if (!invoer) { //Checkt of het bestand opent/bestaat
+    return false;
+  }
+
+  getline(invoer, regel);
+  for (char& c : regel) { //Checkt de pot
+    if (c != 'g' && c != 'b' && !isspace(c)) {
+      return false;
+    }
+  }
+
+  for (int i = 0; i < 4; i++) { //Checkt of speldata de max. waarden overschreidt
+    invoer >> getal;
+    if (getal < 1 || getal > maxPars[i]) {
+      return false;
+    }
+  }
+
+  for (int i = 0; i < 0; i++) { //Checkt of data van de spelers klopt
+    break;
+  }
+
+  //Checkt of het klopt wie aan de beurt is
+  //Checkt of het bestand eindigt
+
+  return true;
+}
+
+string TegelSpel::sortSchaal(string schaal) {
+  string sorted = "";
+  int g = 0, b = 0;
+
+  for (char& c : schaal) {
+    if (c == 'g') {
+      g++;
+    }
+    else {
+      b++;
+    }
+  }
+
+  sorted.append(g, 'g');
+  sorted.append(b, 'b');
+  return sorted;
+}
