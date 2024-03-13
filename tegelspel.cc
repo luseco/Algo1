@@ -7,16 +7,14 @@
 
 //*************************************************************************
 
-TegelSpel::TegelSpel ()
-{
+TegelSpel::TegelSpel () {
   // TODO: implementeer zo nodig deze constructor
 
 }  // default constructor
 
 //*************************************************************************
 
-int TegelSpel::getSchalen () //joelle
-{
+int TegelSpel::getSchalen () { //joelle
   // TODO: implementeer deze memberfunctie
   return 0;
 
@@ -24,8 +22,8 @@ int TegelSpel::getSchalen () //joelle
 
 //*************************************************************************
 
-string TegelSpel::getPot () //joelle
-{ string retString;
+string TegelSpel::getPot () { //joelle
+  string retString;
 
   // TODO: implementeer deze memberfunctie
   return retString;
@@ -34,83 +32,81 @@ string TegelSpel::getPot () //joelle
 
 //*************************************************************************
 
-vector< pair <int,int> > TegelSpel::getInhoudSchalen () //ibraheem
-{ vector< pair <int,int> > inhoudSchalen;
-
-  // TODO: implementeer deze memberfunctie
+vector< pair <int,int> > TegelSpel::getInhoudSchalen () { 
+  vector<pair<int, int>> inhoudSchalen;
+  
+  for (string& schaal : schalen) {
+    int g = 0, b = 0;
+    for (char& c : schaal) {
+      if (c == 'g') {
+        g++;
+      }
+      else {
+        b++;
+      }
+    }
+    inhoudSchalen.push_back(make_pair(g, b));
+  }
 
   return inhoudSchalen;
-
 }  // getInhoudSchalen
 
 //*************************************************************************
 
-vector< pair <int,int> > TegelSpel::getInhoudRijen (int speler) //ibraheem
-{ vector< pair <int,int> > inhoudRijen;
+vector< pair <int,int> > TegelSpel::getInhoudRijen (int speler) {
+  vector< pair <int,int> > inhoudRijen;
 
-  // TODO: implementeer deze memberfunctie
+  if (speler == 1) {
+    return speler1;
+  }
+  if (speler == 2) {
+    return speler2;
+  }
 
   return inhoudRijen;
-
 }  // getInhoudRijen
 
 //*************************************************************************
 
-bool TegelSpel::leesInSpel (const char* invoernaam)
-{ ifstream invoer;
+bool TegelSpel::leesInSpel (const char* invoernaam) {
+  ifstream invoer;
   string regel;
 
-  invoer.open(invoernaam);
-  if (!invoer) {
+  if (!checkFormat(invoernaam)) { //Checkt de format van het bestand
     return false;
   }
-
+  
+  invoer.open(invoernaam);
   getline(invoer, regel);
-  for (char& c : regel) {
-    if (c != 'b' && c != 'g' && !isspace(c)) {
-      return false;
-    }
-  }
-  pot = regel;
+  pot = regel; //Leest de pot in
 
-  for (int i = 0; i < 4; i++) {
+  for (int i = 0; i < M; i++) {
+    schalen.push_back(pot.substr(0, N));
+    pot.erase(0, N);
+  }
+
+  for (int i = 0; i < 4; i++) { //Leest de data van het spel in
     invoer >> *pars[i];
-    if(*pars[i] < 1 || *pars[i] > maxPars[i]) {
-      return false;
-    }
   }
 
   getline(invoer, regel);
-  for (int j = 0; j < 2; j++) {
-      vector<pair<char, int>> *speler;
-      if (j == 0) {
-          speler = &speler1;
-      } else {
-          speler = &speler2;
-      }
-
-      for (int i = 0; i < K; i++) {
-          getline(invoer, regel);
-          if (regel[0] != '0' && regel[2] != '0') {
-              return false;
-          } if (regel[0] == '0' && regel[2] == '0') {
-              speler->push_back(make_pair(' ', 0));
-          } else if (regel[0] - '0' >= 1 && regel[0] - '0' <= L) {
-              speler->push_back(make_pair('g', regel[0] - '0'));
-          } else if (regel[2] - '0' >= 1 && regel[2] - '0' <= L) {
-              speler->push_back(make_pair('b', regel[2] - '0'));
-          }
-      }
+  for (int i = 0; i < K; i++) { //Leest de velden van de spelers in
+    getline(invoer, regel);
+    speler1.push_back(make_pair(regel[0] - '0', regel[2] - '0'));
   }
-  invoer >> beurt;
+  for (int i = 0; i < K; i++) { //Leest de velden van de spelers in
+    getline(invoer, regel);
+    speler2.push_back(make_pair(regel[0] - '0', regel[2] - '0'));
+  }
+  invoer >> beurt; //Leest welke speler aan de beurt is in
+  
   invoer.close();
   return true;
 }  // leesInSpel
 
 //*************************************************************************
 
-bool TegelSpel::eindstand () //joelle
-{
+bool TegelSpel::eindstand () { //joelle
   // TODO: implementeer deze memberfunctie
 
   return false;
@@ -119,16 +115,14 @@ bool TegelSpel::eindstand () //joelle
 
 //*************************************************************************
 
-void TegelSpel::drukAf () //ibraheem
-{
-  // TODO: implementeer deze memberfunctie
-
+void TegelSpel::drukAf () {
+  
 }  // drukAf
 
 //*************************************************************************
 
-vector< pair<int,char> > TegelSpel::bepaalVerschillendeZetten () //joelle
-{ vector< pair<int,char> > zetten;
+vector< pair<int,char> > TegelSpel::bepaalVerschillendeZetten () { //joelle
+  vector< pair<int,char> > zetten;
 
   // TODO: implementeer deze memberfunctie
 
@@ -138,8 +132,7 @@ vector< pair<int,char> > TegelSpel::bepaalVerschillendeZetten () //joelle
 
 //*************************************************************************
 
-bool TegelSpel::doeZet (int schaal, char kleur) //ibraheem
-{
+bool TegelSpel::doeZet (int schaal, char kleur) { //ibraheem
   // TODO: implementeer deze memberfunctie
 
   return true;
@@ -148,8 +141,7 @@ bool TegelSpel::doeZet (int schaal, char kleur) //ibraheem
 
 //*************************************************************************
 
-bool TegelSpel::unDoeZet () //ibraheem 
-{
+bool TegelSpel::unDoeZet () { //ibraheem 
   // TODO: implementeer deze memberfunctie
 
   return true;
@@ -159,8 +151,7 @@ bool TegelSpel::unDoeZet () //ibraheem
 //*************************************************************************
 
 int TegelSpel::besteScore (pair<int,char> &besteZet,
-                             long long &aantalStanden)
-{
+                             long long &aantalStanden) {
   // TODO: implementeer deze memberfunctie
 
   return 0;
@@ -169,8 +160,8 @@ int TegelSpel::besteScore (pair<int,char> &besteZet,
 
 //*************************************************************************
 
-pair<int,char> TegelSpel::bepaalGoedeZet (int nrSimulaties)
-{ pair<int,char> goedeZet;
+pair<int,char> TegelSpel::bepaalGoedeZet (int nrSimulaties) {
+  pair<int,char> goedeZet;
 
   // TODO: implementeer deze memberfunctie
 
@@ -180,8 +171,7 @@ pair<int,char> TegelSpel::bepaalGoedeZet (int nrSimulaties)
 
 //*************************************************************************
 
-int TegelSpel::bepaalGoedeScore ()
-{
+int TegelSpel::bepaalGoedeScore () {
   // TODO: implementeer deze memberfunctie
 
   return 0;
@@ -190,8 +180,7 @@ int TegelSpel::bepaalGoedeScore ()
 
 //*************************************************************************
 
-void TegelSpel::doeExperiment ()
-{
+void TegelSpel::doeExperiment () {
   // TODO: implementeer deze memberfunctie
 
 }  // doeExperiment

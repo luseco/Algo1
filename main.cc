@@ -184,8 +184,7 @@ void hoofdmenu ()
     cin >> keuze;
     switch (keuze)
     { case 1: s1 = new TegelSpel ();
-//              s1 -> drukAf ();  // er is nog geen geldig spel,
-//                                // niet crashen...
+              s1 -> drukAf ();
               cout << "Geef de naam van het tekstbestand met het spel: ";
               cin >> invoernaam;
               if (s1 -> leesInSpel (invoernaam))

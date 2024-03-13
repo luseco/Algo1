@@ -3,6 +3,7 @@
 #ifndef TegelSpelHVar  // voorkom dat dit bestand meerdere keren
 #define TegelSpelHVar  // ge-include wordt
 
+#include <fstream>
 #include <vector>
 #include <string>
 #include "constantes.h"
@@ -169,11 +170,49 @@ class TegelSpel
     void doeExperiment ();
 
   private:
-    string pot;
-    int M, N, L, K, beurt;
-    int *pars[4] = {&M, &N, &K, &L};
-    const int maxPars[4] = {MaxSchalen, MaxPerSchaal, MaxRijen, MaxPerRij};
-    vector<pair<char, int>> speler1, speler2;
+    string pot; //De pot
+    int M, N, L, K; //Speldata: n Schalen, n per Schaal, n rijen, n per rij
+    int beurt; //Welke speler aan de beurt is
+
+    int *pars[4] = {&M, &N, &K, &L}; //Array van pointers naar speldata
+    const int maxPars[4] = {MaxSchalen, MaxPerSchaal, MaxRijen, MaxPerRij}; //Array van Max. waarden
+
+    vector<pair<int, int>> speler1, speler2; //De velden van de spelers
+    vector<string> schalen; //Vector van de schalen
+
+    bool checkFormat(const char* invoernaam) {//Checkt de format van een bestand
+      ifstream invoer;
+      string regel;
+      int getal;
+
+      invoer.open(invoernaam);
+      if (!invoer) { //Checkt of het bestand opent/bestaat
+        return false;
+      }
+
+      getline(invoer, regel);
+      for (char& c : regel) { //Checkt de pot
+        if (c != 'g' && c != 'b' && !isspace(c)) {
+          return false;
+        }
+      }
+
+      for (int i = 0; i < 4; i++) { //Checkt of speldata de max. waarden overschreidt
+        invoer >> getal;
+        if (getal < 1 || getal > maxPars[i]) {
+          return false;
+        }
+      }
+
+      for (int i = 0; i < 0; i++) { //Checkt of data van de spelers klopt
+        break;
+      }
+
+      //Checkt of het klopt wie aan de beurt is
+      //Checkt of het bestand eindigt
+
+      return true;
+    }
 };
 
 #endif
