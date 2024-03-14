@@ -177,10 +177,14 @@ class TegelSpel
     const int maxPars[4] = {MaxSchalen, MaxPerSchaal, MaxRijen, MaxPerRij}; //Array van Max. waarden
 
     vector<pair<int, int>> speler1, speler2; //De velden van de spelers
-    vector<string> schalen; //Vector van de schalen
+    vector<pair<int, int>> schalen; //Vector van de schalen
 
     bool checkFormat(const char* invoernaam);
+    pair<int, int> countKleuren(string tegels);
     string sortSchaal(string schaal);
+    void vulAan(int schaal);
+    int schaalCount(int tegels);
+    int potCount();
 };
 
 #endif

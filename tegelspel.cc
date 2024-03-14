@@ -76,8 +76,9 @@ bool TegelSpel::leesInSpel (const char* invoernaam) {
   }
 
   for (int i = 0; i < M; i++) { //Vult de schalen met de inhoud van de pot
-    schalen.push_back(pot.substr(0, N)); //!!!doet rare dingen wanneer pot te klein
-    pot.erase(0, N);
+    schalen.push_back("");
+    vulAan(i);
+    schalen[i] = sortSchaal(schalen[i]);
   }
 
   getline(invoer, regel);
@@ -132,7 +133,7 @@ void TegelSpel::drukAf () {
   int i = 1;
   cout << "Schalen:" << endl;
   for (string& schaal : schalen) {
-    cout <<i++ << ": " << sortSchaal(schaal) << "  ";
+    cout <<i++ << ": " << schaal << "  ";
   }
 
   cout << "\n\n" << "   Speler 1    Speler 2" << endl
@@ -191,11 +192,12 @@ vector< pair<int,char> > TegelSpel::bepaalVerschillendeZetten () { //joelle
 bool TegelSpel::doeZet (int schaal, char kleur) {
   bool geldig = true;
   pair<int, char> zet = make_pair(schaal, kleur);
+  int tegels;
 
-  if (schaal < 1 || schaal > M) {
+  if (schaal < 0 || schaal >= M) {
     geldig = false;
   }
-  else if (schalen[schaal - 1].find(kleur) == -1) {
+  else if (schalen[schaal].find(kleur) == string::npos) {
     geldig = false;
   }
   else {
@@ -209,7 +211,15 @@ bool TegelSpel::doeZet (int schaal, char kleur) {
   }
   
   if (geldig) {
-    //erase(schalen[schaal - 1], kleur);
+    if (kleur == 'g') {
+      tegels = countKleuren(schalen[schaal]).first;
+      schalen[schaal].erase(0, tegels);
+    } 
+    else {
+      tegels = countKleuren(schalen[schaal]).second;
+      schalen[schaal].erase(schalen[schaal].size() - tegels, tegels);
+    }
+    vulAan(schaal);
   }
 
   return geldig;
@@ -318,11 +328,10 @@ bool TegelSpel::checkFormat(const char* invoernaam) {//Checkt de format van een 
   return true;
 }
 
-string TegelSpel::sortSchaal(string schaal) {
-  string sorted = "";
+pair<int, int> TegelSpel::countKleuren(string tegels) {
   int g = 0, b = 0;
 
-  for (char& c : schaal) {
+  for (char& c : tegels) {
     if (c == 'g') {
       g++;
     }
@@ -331,9 +340,35 @@ string TegelSpel::sortSchaal(string schaal) {
     }
   }
 
-  sorted.append(g, 'g');
-  sorted.append(b, 'b');
+  return make_pair(g, b);
+}
+
+string TegelSpel::sortSchaal(string tegels) {
+  string sorted = "";
+  pair<int, int> kleuren = countKleuren(tegels);
+
+  sorted.append(kleuren.first, 'g');
+  sorted.append(kleuren.second, 'b');
   return sorted;
 }
 
-void vulAan(int schaal)
+int TegelSpel::schaalCount(int schaal) {
+  return schalen[schaal].first + schalen[schaal].second;
+}
+
+int TegelSpel::potCount() {
+  int tegels;
+
+  for (char& c : pot) {
+    
+  }
+}
+
+void TegelSpel::vulAan(int schaal) {
+  int nSchaal = countSchaal(schaal);
+  int nPot = countTegels(pot);
+  int nAanvullen = min(N - nSchaal, nPot);
+
+  schalen[schaal].append(pot.substr(0, nAanvullen));
+  pot.erase(0, nAanvullen);
+}
