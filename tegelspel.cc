@@ -220,7 +220,7 @@ bool TegelSpel::unDoeZet () { //ibraheem
 //*************************************************************************
 
 int TegelSpel::besteScore (pair<int,char> &besteZet,
-                             long long &aantalStanden) {
+                             long long &aantalStanden) { //ibraheem
   // TODO: implementeer deze memberfunctie
 
   return 0;
@@ -229,7 +229,7 @@ int TegelSpel::besteScore (pair<int,char> &besteZet,
 
 //*************************************************************************
 
-pair<int,char> TegelSpel::bepaalGoedeZet (int nrSimulaties) {
+pair<int,char> TegelSpel::bepaalGoedeZet (int nrSimulaties) { //joelle
   pair<int,char> goedeZet;
 
   // TODO: implementeer deze memberfunctie
@@ -240,7 +240,7 @@ pair<int,char> TegelSpel::bepaalGoedeZet (int nrSimulaties) {
 
 //*************************************************************************
 
-int TegelSpel::bepaalGoedeScore () {
+int TegelSpel::bepaalGoedeScore () { //ibraheem
   // TODO: implementeer deze memberfunctie
 
   return 0;
@@ -249,7 +249,7 @@ int TegelSpel::bepaalGoedeScore () {
 
 //*************************************************************************
 
-void TegelSpel::doeExperiment () {
+void TegelSpel::doeExperiment () { //ibraheem
   // TODO: implementeer deze memberfunctie
 
 }  // doeExperiment
@@ -307,3 +307,5 @@ string TegelSpel::sortSchaal(string schaal) {
   sorted.append(b, 'b');
   return sorted;
 }
+
+void vulAan(int schaal)
