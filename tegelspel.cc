@@ -181,14 +181,14 @@ return zetten;
 
 //*************************************************************************
 
-bool TegelSpel::doeZet (int schaal, char kleur) { //ibraheem
+bool TegelSpel::doeZet (int schaal, char kleur) {
   bool geldig = true;
   pair<int, char> zet = make_pair(schaal, kleur);
 
   if (schaal < 1 || schaal > M) {
     geldig = false;
   }
-  else if (!schalen[schaal - 1].constains(kleur)) {
+  else if (schalen[schaal - 1].find(kleur) == -1) {
     geldig = false;
   }
   else {
@@ -202,7 +202,7 @@ bool TegelSpel::doeZet (int schaal, char kleur) { //ibraheem
   }
   
   if (geldig) {
-    return true;
+    //erase(schalen[schaal - 1], kleur);
   }
 
   return geldig;
