@@ -11,9 +11,9 @@ TegelSpel::TegelSpel () {}  // default constructor
 
 //*************************************************************************
 
-int TegelSpel::getSchalen () {
+int TegelSpel::getSchalen () { //joelle
   return M;
-}  // getSchalen
+}
 
 //*************************************************************************
 
@@ -99,22 +99,24 @@ bool TegelSpel::leesInSpel (const char* invoernaam) {
 //*************************************************************************
 
 bool TegelSpel::eindstand () { //joelle
-vector< pair <int,int> > inhoudRijen;
-int MaxRij = *pars[2];
-int speler = 1; 
-inhoudRijen = getInhoudRijen(speler);
+    int speler = 1;
+    vector< pair <int,int> > inhoudRijen = getInhoudRijen(speler);
+    vector< pair <int,int> > inhoudSchalen = getInhoudSchalen();
+    int MaxRij = *pars[2];
 
-for (const auto& rij : inhoudRijen) {
-    int eerste = rij.first; 
-    int tweede = rij.second;
-    if ( eerste == MaxRij || tweede == MaxRij){
+for (pair <int,int> rij : inhoudRijen) {
+    if (( rij.first == MaxRij || rij.second == MaxRij) ||
+        (rij.first > MaxRij || rij.second > MaxRij))
         return true;
-    }//schalen in een array pair ztten want ze moeten genummerd worden van 0 -> m-1
-}
+}//for
+
+for  (pair <int,int> schaal :inhoudSchalen) {
+    if (schaal.first == '0' && schaal.second == '0'){
+        return true;
+    }
+}//for 
+
 return false;
-    // Retourneer:
-    // * true, als we een eindstand hebben bereikt
-    // * false, als we geen eindstand hebben bereikt
 } // eindstand
 
 //*************************************************************************
@@ -151,33 +153,38 @@ void TegelSpel::drukAf () {
 
 //*************************************************************************
 
-vector< pair<int,char> > TegelSpel::bepaalVerschillendeZetten () {
+vector< pair<int,char> > TegelSpel::bepaalVerschillendeZetten () { //joelle
     vector<pair<int, char>> zetten;
-    vector<pair<int, int>> inhoudSchalen = {
-        make_pair(4, 0),
-        make_pair(2, 3),
-        make_pair(1, 1)
-    };
+    int MaxRij = *pars[2];
+    int speler = 1;
+    vector<pair<int, int>> inhoudSchalen = getInhoudSchalen();
+    vector<pair<int, int>> inhoudRijen = getInhoudRijen(speler);
+    bool verschillend = false, geldig = true;
 
-    bool verschillend = true;
-    bool geldig = true;
-
-    for (const auto& s : inhoudSchalen) {
-        if ((s.first != s.second) || (s.first != '0' && s.second != '0')) {
+    for (pair<int, int>& schaal : inhoudSchalen) {
+        if ((schaal.first != schaal.second) || (schaal.first != 0 && schaal.second != 0)) {
             verschillend = true;
         }
-    }//verschillend
-
-
-for (int i = 0; i < 10; i++) {
-        pair<int, char> nieuwPaar = make_pair(i, 'g');
-        pair<int, char> Paar = make_pair(i, 'b');
-        zetten.push_back(nieuwPaar);
-        zetten.push_back(Paar);
     }
 
-return zetten;
-}  // bepaalVerschillendeZetten
+    for (pair<int, int> &rij : inhoudRijen) {
+        if ((rij.second == '0' && (rij.first > MaxRij)) ||
+            (rij.first == '0' && (rij.second > MaxRij))) {
+            geldig = false;
+            cout << rij.first << " " << rij.second << endl;
+        }
+    }//alse zet .first + rij.firsr > maxrij
+
+    if (verschillend && geldig) {
+        for (const auto& schaal : inhoudSchalen) {
+            zetten.push_back(pair<int, char>(schaal.first, 'g'));
+            zetten.push_back(pair<int, char>(schaal.first, 'b'));
+        }
+    }
+
+    return zetten;
+}
+    
 
 //*************************************************************************
 
@@ -223,6 +230,20 @@ int TegelSpel::besteScore (pair<int,char> &besteZet,
                              long long &aantalStanden) { //ibraheem
   // TODO: implementeer deze memberfunctie
 
+// Bepaal met behulp van brute force en recursie de eindscore voor
+    // de speler die in de huidige stand (= de stand van de huidige
+    // recursieve aanroep) aan de beurt is, wanneer beide spelers vanaf
+    // dit punt optimaal verder spelen.
+    // De score is gelijk aan het aantal volle rijen van de speler min
+    // het aantal volle rijen van de andere speler.
+    // Post:
+    // * als de huidige stand geen eindstand was, bevat parameter
+    //   besteZet een paar (schaal,kleur) dat de huidige speler
+    //   in de eerstvolgende zet moet kiezen, om de beste score te bereiken
+    // * anders bevat parameter besteZet een passende default waarde
+    // * aantalStanden is gelijk aan het aantal standen dat we hebben
+    //   bekeken bij het bepalen van de beste eindscore
+    // * de stand in het spel is nog onveranderd
   return 0;
 
 }  // besteScore
@@ -231,8 +252,15 @@ int TegelSpel::besteScore (pair<int,char> &besteZet,
 
 pair<int,char> TegelSpel::bepaalGoedeZet (int nrSimulaties) { //joelle
   pair<int,char> goedeZet;
+// Bepaal een `goede zet' voor de speler die in de huidige stand aan
+    // aan de beurt is: een zet die ertoe leidt dat hij (na deze ene zet)
+    // met nrSimulaties keer random uitspelen een zo hoog mogelijke
+    // gemiddelde score haalt.
+    // Controleer eerst of de huidige stand geen eindstand is.
+    // Retourneer:
+    // * de gevonden zet (rij,kolom), als het geen eindstand is
+    // * een passende default waarde, als het al wel een eindstand is
 
-  // TODO: implementeer deze memberfunctie
 
   return goedeZet;
 
