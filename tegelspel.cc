@@ -100,13 +100,10 @@ bool TegelSpel::leesInSpel (const char* invoernaam) {
 //*************************************************************************
 
 bool TegelSpel::eindstand () { //joelle
-    vector< pair <int,int> > inhoudRijen = getInhoudRijen(beurt);
-    vector< pair <int,int> > inhoudSchalen = getInhoudSchalen();
-    int MaxRij = *pars[2];
 
 for (pair <int,int> rij : inhoudRijen) {
-    if (( rij.first == MaxRij || rij.second == MaxRij) ||
-        (rij.first > MaxRij || rij.second > MaxRij))
+    if (( rij.first == K || rij.second == K) ||
+        (rij.first > K|| rij.second > K))
         return true;
 }//for
 
@@ -155,22 +152,15 @@ void TegelSpel::drukAf () {
 
 vector< pair<int,char> > TegelSpel::bepaalVerschillendeZetten () { //joelle
     vector<pair<int, char>> zetten;
-    vector<pair<int, int>> inhoudSchalen = getInhoudSchalen();
-    vector<pair<int, int>> inhoudRijen = getInhoudRijen(beurt);
-    int getschalen = getSchalen();
-    vector <int> schaal;
-    vector<int> temp;
-    vector <int> temp2;
-    int MaxRij = *pars[2];
     bool geldig_g = false, geldig_b = false;
 
     for (int i = 0; i < getschalen; ++i) {
     bool found_g = false, found_b = false;
     for (pair<int, int> rij : inhoudRijen) {//checkt als de zet gevonden is, de zet niet groter is dan maxrij. als de schaal de kleur heeft
-        if (!found_g && (rij.second == 0) && (rij.first + inhoudSchalen[i].first <= MaxRij) && inhoudSchalen[i].first != 0) {
+        if (!found_g && (rij.second == 0) && (rij.first + inhoudSchalen[i].first <= K) && inhoudSchalen[i].first != 0) {
             temp.push_back(i); 
             geldig_g = true,found_g = true; //true om aan te geven dat geldig_g is gevonden
-        }if (!found_b && (rij.first == 0) && ((rij.second + inhoudSchalen[i].second) <= MaxRij) && inhoudSchalen[i].second != 0) {
+        }if (!found_b && (rij.first == 0) && ((rij.second + inhoudSchalen[i].second) <= K) && inhoudSchalen[i].second != 0) {
             temp2.push_back(i); 
             geldig_b = true,found_b = true; // true om aan te geven dat geldig_b is gevonden
         }if (found_g && found_b)

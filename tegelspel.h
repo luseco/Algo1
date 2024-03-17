@@ -178,6 +178,13 @@ class TegelSpel
 
     vector<pair<int, int>> speler1, speler2; //De velden van de spelers
     vector<string> schalen; //Vector van de schalen
+    
+    vector<pair<int, int>> inhoudSchalen = getInhoudSchalen();
+    vector<pair<int, int>> inhoudRijen = getInhoudRijen(beurt);
+    int getschalen = getSchalen();
+    vector <int> schaal;
+    vector<int> temp;
+    vector <int> temp2;
 
     bool checkFormat(const char* invoernaam);
     string sortSchaal(string schaal);
