@@ -139,7 +139,7 @@ class TegelSpel
     // aan de beurt is: een zet die ertoe leidt dat hij (na deze ene zet)
     // met nrSimulaties keer random uitspelen een zo hoog mogelijke
     // gemiddelde score haalt.
-    // Controleer eerst of de huidige stand geen eindstand is.
+    // Controleer eerst of de huidige stand geen eindstand is. //
     // Retourneer:
     // * de gevonden zet (rij,kolom), als het geen eindstand is
     // * een passende default waarde, als het al wel een eindstand is
@@ -151,7 +151,7 @@ class TegelSpel
     // een beste zet (gevonden met besteScore) doet.
     // Retourneer:
     // * de score aan het eind van het spel voor de speler die steeds
-    //   een `goede zet' gedaan heeft
+    //   een `goede zet' gedaan heeft /
     // Post:
     // * de huidige stand is weer hetzelfde als aan het begin van de functie
     //   (zetten zijn dus weer ongedaan gemaakt)
@@ -181,6 +181,7 @@ class TegelSpel
 
     bool checkFormat(const char* invoernaam);
     string sortSchaal(string schaal);
+    vector<pair<int, char>> removeDuplicates(const vector<pair<int, char>>& vec);
 };
 
 #endif
