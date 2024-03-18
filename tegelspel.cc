@@ -156,24 +156,36 @@ vector< pair<int,char> > TegelSpel::bepaalVerschillendeZetten () { //joelle
 
     for (int i = 0; i < getschalen; ++i) {
     bool found_g = false, found_b = false;
-    for (pair<int, int> rij : inhoudRijen) {//checkt als de zet gevonden is, de zet niet groter is dan maxrij. als de schaal de kleur heeft
+    for (pair<int, int> rij : inhoudRijen) {
         if (!found_g && (rij.second == 0) && (rij.first + inhoudSchalen[i].first <= K) && inhoudSchalen[i].first != 0) {
             temp.push_back(i); 
-            geldig_g = true,found_g = true; //true om aan te geven dat geldig_g is gevonden
+            geldig_g = true,found_g = true;
         }if (!found_b && (rij.first == 0) && ((rij.second + inhoudSchalen[i].second) <= K) && inhoudSchalen[i].second != 0) {
             temp2.push_back(i); 
-            geldig_b = true,found_b = true; // true om aan te geven dat geldig_b is gevonden
+            geldig_b = true,found_b = true;
         }if (found_g && found_b)
         break;
         }
     }
 
     for (int i = 0; i < getschalen; ++i) {
-        for (int j = i + 1; j < getschalen; ++j) {
-            if (inhoudSchalen[i] == inhoudSchalen[j]) {
+    for (int j = i + 1; j < getschalen; ++j) {
+        if (inhoudSchalen[i] == inhoudSchalen[j]) {
             schaal.push_back(i);
-            }
+        if (i == temp2[i]) {
+            temp2.erase(temp2.begin() + i);
         }
+        if (j == temp2[i]) {
+            temp2.erase(temp2.begin() + j - 1);
+        }
+        if (i == temp[i]) {
+            temp.erase(temp.begin() + i);
+        }
+        if (j == temp[i]) {
+            temp.erase(temp.begin() + j - 1);
+                }
+             }
+         }
     }
 
     for (int & i : schaal) {
@@ -184,10 +196,9 @@ vector< pair<int,char> > TegelSpel::bepaalVerschillendeZetten () { //joelle
     }if (geldig_b ) {
         for (int & k : temp2) zetten.push_back(make_pair(k, 'b'));
     }
+
     return removeDuplicates(zetten);
 }
-    
-
 //*************************************************************************
 
 bool TegelSpel::doeZet (int schaal, char kleur) {
@@ -210,9 +221,6 @@ bool TegelSpel::doeZet (int schaal, char kleur) {
     }
   }
   
-  if (geldig) {
-    //erase(schalen[schaal - 1], kleur);
-  }
 
   return geldig;
 }  // doeZet
@@ -252,17 +260,8 @@ int TegelSpel::besteScore (pair<int,char> &besteZet,
 //*************************************************************************
 
 pair<int,char> TegelSpel::bepaalGoedeZet (int nrSimulaties) {
-  pair<int,char> goedeZet;
-// Bepaal een `goede zet' voor de speler die in de huidige stand aan
-    // aan de beurt is: een zet die ertoe leidt dat hij (na deze ene zet)
-    // met nrSimulaties keer random uitspelen een zo hoog mogelijke
-    // gemiddelde score haalt.
-    // Controleer eerst of de huidige stand geen eindstand is.
-    // Retourneer:
-    // * de gevonden zet (rij,kolom), als het geen eindstand is
-    // * een passende default waarde, als het al wel een eindstand is
 
-
+ pair<int,char> goedeZet;
   return goedeZet;
 
 }  // bepaalGoedeZet
@@ -337,19 +336,3 @@ string TegelSpel::sortSchaal(string schaal) {
   return sorted;
 }
 
-vector<pair<int, char>> TegelSpel :: removeDuplicates(const vector<pair<int, char>>& vec) {
-    set<pair<int, char>> uniekPair;
-
-    // Voeg elk paar toe aan de set
-    for (const auto& pair : vec) {
-        uniekPair.insert(pair);
-    }
-
-    // Maak een nieuwe vector van unieke paren
-    vector<pair<int, char>> uniekVector;
-    for (const auto& pair : uniekPair) {
-        uniekVector.push_back(pair);
-    }
-
-    return uniekVector;
-}
