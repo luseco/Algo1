@@ -221,6 +221,10 @@ bool TegelSpel::doeZet (int schaal, char kleur) {
     }
   }
   
+  //gebruik kleur, welke schaal en wie aan de beurt
+  schalen[schaal].erase(0, N);
+  schalen[schaal].append(pot.substr(0, N));
+  pot.erase(0, N);
 
   return geldig;
 }  // doeZet
