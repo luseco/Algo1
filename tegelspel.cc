@@ -78,6 +78,7 @@ bool TegelSpel::leesInSpel (const char* invoernaam) {
 
   for (int i = 0; i < M; i++) { //Vult de schalen met de inhoud van de pot
     schalen.push_back(pot.substr(0, N)); //!!!doet rare dingen wanneer pot te klein
+    schalen[i] = sortSchaal(schalen[i]);
     pot.erase(0, N);
   }
 
@@ -126,7 +127,7 @@ void TegelSpel::drukAf () {
     cout << "Pot: Leeg" << endl;
   }
 
-  int i = 1;
+  int i = 0;
   cout << "Schalen:" << endl;
   for (string& schaal : schalen) {
     cout <<i++ << ": " << sortSchaal(schaal) << "  ";
@@ -197,7 +198,7 @@ vector< pair<int,char> > TegelSpel::bepaalVerschillendeZetten () { //joelle
         for (int & k : temp2) zetten.push_back(make_pair(k, 'b'));
     }
 
-    return removeDuplicates(zetten);
+    return zetten;
 }
 //*************************************************************************
 
@@ -205,11 +206,13 @@ bool TegelSpel::doeZet (int schaal, char kleur) {
   bool geldig = true;
   pair<int, char> zet = make_pair(schaal, kleur);
 
-  if (schaal < 1 || schaal > M) {
+  if (schaal < 0 || schaal >= M) {
     geldig = false;
+    cout << endl << "Schaal bestaat niet.";
   }
-  else if (schalen[schaal - 1].find(kleur) == -1) {
+  else if (schalen[schaal].find(kleur) == string::npos) {
     geldig = false;
+    cout << endl << "Geen geldige kleur.";
   }
   else {
     for (pair<int, char>& mogelijk : bepaalVerschillendeZetten()) {
@@ -221,11 +224,56 @@ bool TegelSpel::doeZet (int schaal, char kleur) {
     }
   }
   
-  //gebruik kleur, welke schaal en wie aan de beurt
-  schalen[schaal].erase(0, N);
-  schalen[schaal].append(pot.substr(0, N));
-  pot.erase(0, N);
+  if (!geldig) {
+    return geldig;
+  }
 
+  //gebruik kleur, welke schaal en wie aan de beurt
+  int nTegelsZet = 0;
+  int offset = 0;
+
+  for (char& tegel : schalen[schaal]) {
+    if (tegel == kleur) {
+      nTegelsZet++;
+    }
+  }
+
+  if (kleur == 'b') {
+    offset = schalen[schaal].find('b');
+  }
+
+  schalen[schaal].erase(offset, nTegelsZet);
+  schalen[schaal].append(pot.substr(0, nTegelsZet));
+  schalen[schaal] = sortSchaal(schalen[schaal]);
+  pot.erase(0, nTegelsZet);
+
+  if (beurt == 1) {
+    beurt = 2;
+    for (pair<int, int>& rij : speler1) {
+      if (kleur == 'g' && nTegelsZet <= K - rij.first && rij.second == 0) {
+        rij.first += nTegelsZet;
+        break;
+      }
+      if (kleur == 'b' && nTegelsZet <= K - rij.second && rij.first == 0) {
+        rij.second += nTegelsZet;
+        break;
+      }
+    }
+  } else {
+    beurt = 1;
+    for (pair<int, int>& rij : speler2) {
+      if (kleur == 'g' && nTegelsZet <= K - rij.first && rij.second == 0) {
+        rij.first += nTegelsZet;
+        break;
+      }
+      if (kleur == 'b' && nTegelsZet <= K - rij.second && rij.first == 0) {
+        rij.second += nTegelsZet;
+        break;
+      }
+    }
+  }
+
+  //moet nog op een stack voor unDoeZet
   return geldig;
 }  // doeZet
 
@@ -275,8 +323,6 @@ pair<int,char> TegelSpel::bepaalGoedeZet (int nrSimulaties) { //joelle
     // * de gevonden zet (rij,kolom), als het geen eindstand is
     // * een passende default waarde, als het al wel een eindstand is
 
-
- pair<int,char> goedeZet;
   return goedeZet;
 
 }  // bepaalGoedeZet

@@ -187,8 +187,7 @@ class TegelSpel
     vector <int> temp2;
 
     bool checkFormat(const char* invoernaam);
-    string sortSchaal(string schaal);
-    vector<pair<int, char>> removeDuplicates(const vector<pair<int, char>>& vec);
+    string sortSchaal(string schaal); //-> Laat het alle schalen sorteren
 };
 
 #endif
