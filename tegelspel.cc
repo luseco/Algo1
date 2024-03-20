@@ -227,8 +227,6 @@ bool TegelSpel::doeZet (int schaal, char kleur) {
   if (!geldig) {
     return geldig;
   }
-
-  //gebruik kleur, welke schaal en wie aan de beurt
   int nTegelsZet = 0;
   int offset = 0;
 
