@@ -4,6 +4,7 @@
 #include "standaard.h"
 #include <fstream>   // voor inlezen van spel
 #include <iostream>
+#include <set>
 
 //*************************************************************************
 
@@ -99,14 +100,10 @@ bool TegelSpel::leesInSpel (const char* invoernaam) {
 //*************************************************************************
 
 bool TegelSpel::eindstand () { //joelle
-    int speler = 1;
-    vector< pair <int,int> > inhoudRijen = getInhoudRijen(speler);
-    vector< pair <int,int> > inhoudSchalen = getInhoudSchalen();
-    int MaxRij = *pars[2];
 
 for (pair <int,int> rij : inhoudRijen) {
-    if (( rij.first == MaxRij || rij.second == MaxRij) ||
-        (rij.first > MaxRij || rij.second > MaxRij))
+    if (( rij.first == K || rij.second == K) ||
+        (rij.first > K|| rij.second > K))
         return true;
 }//for
 
@@ -155,37 +152,53 @@ void TegelSpel::drukAf () {
 
 vector< pair<int,char> > TegelSpel::bepaalVerschillendeZetten () { //joelle
     vector<pair<int, char>> zetten;
-    int MaxRij = *pars[2];
-    int speler = 1;
-    vector<pair<int, int>> inhoudSchalen = getInhoudSchalen();
-    vector<pair<int, int>> inhoudRijen = getInhoudRijen(speler);
-    bool verschillend = false, geldig = true;
+    bool geldig_g = false, geldig_b = false;
 
-    for (pair<int, int>& schaal : inhoudSchalen) {
-        if ((schaal.first != schaal.second) || (schaal.first != 0 && schaal.second != 0)) {
-            verschillend = true;
+    for (int i = 0; i < getschalen; ++i) {
+    bool found_g = false, found_b = false;
+    for (pair<int, int> rij : inhoudRijen) {
+        if (!found_g && (rij.second == 0) && (rij.first + inhoudSchalen[i].first <= K) && inhoudSchalen[i].first != 0) {
+            temp.push_back(i); 
+            geldig_g = true,found_g = true;
+        }if (!found_b && (rij.first == 0) && ((rij.second + inhoudSchalen[i].second) <= K) && inhoudSchalen[i].second != 0) {
+            temp2.push_back(i); 
+            geldig_b = true,found_b = true;
+        }if (found_g && found_b)
+        break;
         }
     }
 
-    for (pair<int, int> &rij : inhoudRijen) {
-        if ((rij.second == '0' && (rij.first > MaxRij)) ||
-            (rij.first == '0' && (rij.second > MaxRij))) {
-            geldig = false;
-            cout << rij.first << " " << rij.second << endl;
+    for (int i = 0; i < getschalen; ++i) {
+    for (int j = i + 1; j < getschalen; ++j) {
+        if (inhoudSchalen[i] == inhoudSchalen[j]) {
+            schaal.push_back(i);
+        if (i == temp2[i]) {
+            temp2.erase(temp2.begin() + i);
         }
-    }//alse zet .first + rij.firsr > maxrij
-
-    if (verschillend && geldig) {
-        for (const auto& schaal : inhoudSchalen) {
-            zetten.push_back(pair<int, char>(schaal.first, 'g'));
-            zetten.push_back(pair<int, char>(schaal.first, 'b'));
+        if (j == temp2[i]) {
+            temp2.erase(temp2.begin() + j - 1);
         }
+        if (i == temp[i]) {
+            temp.erase(temp.begin() + i);
+        }
+        if (j == temp[i]) {
+            temp.erase(temp.begin() + j - 1);
+                }
+             }
+         }
     }
 
-    return zetten;
+    for (int & i : schaal) {
+        if (geldig_g) zetten.push_back(make_pair(i, 'g'));
+        if (geldig_b) zetten.push_back(make_pair(i, 'b'));
+    }if (geldig_g) {
+        for (int & j : temp) zetten.push_back(make_pair(j, 'g'));
+    }if (geldig_b ) {
+        for (int & k : temp2) zetten.push_back(make_pair(k, 'b'));
+    }
+
+    return removeDuplicates(zetten);
 }
-    
-
 //*************************************************************************
 
 bool TegelSpel::doeZet (int schaal, char kleur) {
@@ -208,9 +221,10 @@ bool TegelSpel::doeZet (int schaal, char kleur) {
     }
   }
   
-  if (geldig) {
-    //erase(schalen[schaal - 1], kleur);
-  }
+  //gebruik kleur, welke schaal en wie aan de beurt
+  schalen[schaal].erase(0, N);
+  schalen[schaal].append(pot.substr(0, N));
+  pot.erase(0, N);
 
   return geldig;
 }  // doeZet
@@ -262,6 +276,7 @@ pair<int,char> TegelSpel::bepaalGoedeZet (int nrSimulaties) { //joelle
     // * een passende default waarde, als het al wel een eindstand is
 
 
+ pair<int,char> goedeZet;
   return goedeZet;
 
 }  // bepaalGoedeZet
@@ -335,5 +350,3 @@ string TegelSpel::sortSchaal(string schaal) {
   sorted.append(b, 'b');
   return sorted;
 }
-
-void vulAan(int schaal)
