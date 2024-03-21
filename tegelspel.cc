@@ -24,7 +24,7 @@ string TegelSpel::getPot () {
 
 //*************************************************************************
 
-vector< pair <int,int> > TegelSpel::getInhoudSchalen () { 
+vector< pair <int,int> > TegelSpel::getInhoudSchalen () { //test
   vector<pair<int, int>> inhoudSchalen;
   
   for (string& schaal : schalen) {
