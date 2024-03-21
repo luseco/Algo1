@@ -1,28 +1,11 @@
-// Hoofdprogramma voor oplossing voor eerste programmeeropdracht Algoritmiek,
-// voorjaar 2024: TegelSpel
-//
-// Biedt de gebruiker een menustructuur om
-// * het spel te spelen
-//   - vanaf een in te lezen, en mogelijk (deels) gevulde stand
-//   waarbij de gebruiker steeds
-//   - de verschillende zetten voor de huidige speler kan bepalen
-//   - een zet kan uitvoeren (tegels van een schaal kiezen en laten neerleggen)
-//   - de laatste zet ongedaan kan maken
-//   - kan vragen om de score voor de speler die aan de beurt is, als beide
-//     spelers vanaf dit moment optimaal verder spelen
-//   - kan vragen om een `goede zet' voor de speler die aan de beurt is
-//   - kan vragen om de eindscore voor de speler die aan de beurt is,
-//     als hij vanaf nu een `goede zet' doet, terwijl de andere speler
-//     steeds een beste zet doet
-//   - een experiment kan doen met de tijd van besteScore
-//
-// Namen studenten, datum
+// Ibraheem Ahmed (s4147936) & Joelle Tiao(s3939855)
+// 21/03/2024
 
 #include <iostream>
-#include <ctime>  // voor clock() en clock_t
+#include <ctime>
 #include "tegelspel.h"
 using namespace std;
-const int MaxBestandsNaamLengte = 30; // maximale lengte van een bestandsnaam
+const int MaxBestandsNaamLengte = 30;
 
 //*************************************************************************
 

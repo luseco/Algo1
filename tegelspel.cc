@@ -1,3 +1,6 @@
+// Ibraheem Ahmed (s4147936) & Joelle Tiao(s3939855)
+// 21/03/2024
+
 #include "tegelspel.h"
 #include "standaard.h"
 #include <fstream>
@@ -361,7 +364,7 @@ int TegelSpel::bepaalGoedeScore () {
 void TegelSpel::doeExperiment () {
   //Om tijd te meten
   clock_t t1, t2;
-  int undone = 0;
+  int undone = 1;
   
   //Gaat naar een eindstand
   while(!eindstand()) {
@@ -369,24 +372,27 @@ void TegelSpel::doeExperiment () {
     doeZet(goedeZet.first, goedeZet.second);
   }
 
+  //Undoet en berekent hoelang besteZet erover doet
   while(!geschiedenis.empty()) {
     pair<int,char> besteZet;
     long long aantalStanden;
 
     unDoeZet();
 
+    //Noteert de tijd voordat besteScore() wordt gecalled en
+    //en wanneer het klaar is
     t1 = clock ();
     besteScore(besteZet, aantalStanden);
     t2 = clock ();
 
-    cout << undone++ << " undo('s): " << aantalStanden << " Stand(en) in "
-         <<  (((double)(t2-t1))/CLOCKS_PER_SEC) << " seconden." << endl;
+    cout << undone++ << " undo('s): " << aantalStanden << " stand(en) in "
+         <<  (((double)(t2-t1))/CLOCKS_PER_SEC) << " seconden" << endl;
   }
 }
 
 //*************************************************************************
 
-//Checkt de format van een bestand //te lang
+//Checkt de format van een bestand
 bool TegelSpel::checkFormat(const char* invoernaam) { 
   ifstream invoer;
   string regel;
@@ -394,32 +400,41 @@ bool TegelSpel::checkFormat(const char* invoernaam) {
   int parameters[4];
 
   invoer.open(invoernaam);
-  if (!invoer) { //Checkt of het bestand opent/bestaat
+  //Checkt of het bestand opent/bestaat
+  if (!invoer) { 
     return false;
   }
 
   getline(invoer, regel);
-  for (char& c : regel) { //Checkt de pot
+  //Checkt de pot
+  for (char& c : regel) {
     if (c != 'g' && c != 'b' && !isspace(c)) {
       return false;
     }
   }
 
-  invoer >> parameters[0] >> parameters[1] >> parameters[2] >> parameters[3];
-  for (int i = 0; i < 4; i++) { //Checkt of speldata de max. waarden overschreidt
+  //Leest de hoofdparameters in
+  invoer >> parameters[0] >> parameters[1] 
+         >> parameters[2] >> parameters[3];
+  
+  //Checkt of speldata de max. waarden overschreidt
+  for (int i = 0; i < 4; i++) { 
     if (parameters[i] < 1 || parameters[i] > maxPars[i]) {
       return false;
     }
   }
 
-  for (int i = 0; i < parameters[2] * 2; i++) { //Checkt of data van de spelers klopt
+  //Checkt of data van de spelers klopt
+  for (int i = 0; i < parameters[2] * 2; i++) { 
     invoer >> links >> rechts;
-    if ((links != 0 && rechts != 0) || (links < 0 || links > parameters[3]) || 
+    if ((links != 0 && rechts != 0) || 
+        (links < 0 || links > parameters[3]) || 
         (rechts < 0 || rechts > parameters[3])) {
       return false;
     }
   }
   
+  //Checkt of beurt klopt
   invoer >> getal;
   if (getal != 0 && getal != 1) {
     return false;
@@ -429,9 +444,13 @@ bool TegelSpel::checkFormat(const char* invoernaam) {
   return true;
 }
 
+//*************************************************************************
+
+//Telt de hoeveelheid tegels er in een string zitten
 pair<int, int > TegelSpel::countTegels(string Tegels) {
   int g = 0, b = 0;
   
+  //Telt gele en blauwe tegels los
   for (char& tegel : Tegels) {
     if (tegel == 'g') {
         g++;
@@ -442,22 +461,34 @@ pair<int, int > TegelSpel::countTegels(string Tegels) {
 
   return make_pair(g, b);
 }
- 
+
+//*************************************************************************
+
+//Vult een schaal aan met de inhoud van de pot
 void TegelSpel::vulAan(int schaal) {
-  int vrij = min(N - schalen[schaal].first - schalen[schaal].second, int(pot.size()));
+  //Berekent hoeveel er past in de schaal
+  int vrij = min(N - schalen[schaal].first - schalen[schaal].second, 
+                 int(pot.size()));
+  //Maakt pair van de tegels die aangevuld gaan worden
   pair<int, int> aanvulling = countTegels(pot.substr(0, vrij));
   
+  //Aanvullende tegels worden toegevoegd aan de schaal
   schalen[schaal].first += aanvulling.first;
   schalen[schaal].second += aanvulling.second;
 
+  //De voorste zoveel tegels worden van de pot verwijderd
   pot.erase(0, vrij);
 }
 
+//*************************************************************************
+
+//Berekent alle zetten die legaal zijn
 vector<pair<int, char>> TegelSpel::alleZetten() {
   vector<pair<int, char>> zetten;
   vector<pair<int, int>> speler = getInhoudRijen(beurt);
   int gMax = 0, bMax = 0;
 
+  //Berekent de maximale aantal tegels per zet per kleur
   for (pair<int, int>& rij : speler) {
     int gVrij = 0, bVrij = 0;
     
@@ -476,6 +507,7 @@ vector<pair<int, char>> TegelSpel::alleZetten() {
     }
   }
 
+  //Maakt een vector van alle zetten die op het bord passen
   for (int i = 0; i < M; i++) {
     if (schalen[i].first <= gMax && schalen[i].first > 0) {
       zetten.push_back(make_pair(i, 'g'));
@@ -488,6 +520,9 @@ vector<pair<int, char>> TegelSpel::alleZetten() {
   return zetten;
 }
 
+//*************************************************************************
+
+//Togglet 1 naar 2 en vice versa
 int TegelSpel::toggleBeurt(int curBeurt) {
   if (curBeurt == 1) {
     return 2;
@@ -498,22 +533,31 @@ int TegelSpel::toggleBeurt(int curBeurt) {
   return 0;
 }
 
-int TegelSpel::berekenBesteScore(pair<int,char> &besteZet, long long &aantalStanden) {
+//*************************************************************************
+
+//Recursieve functie die door brute force de beste zet berekent
+int TegelSpel::berekenBesteScore(pair<int,char> &besteZet, 
+                                 long long &aantalStanden) {
   int score = MaxRijen * -1;
   vector<pair<int, char>> mogelijkeZetten = alleZetten();
   vector<int> scores;
 
   if (eindstand()) {
     aantalStanden++;
-
+    
+    //Berekent de score van de eindstand
     score = getScore(beurt);
   } else {
+    //Loopt door alle mogelijke zetten en scoort ze
     for (pair<int, char>& zet : mogelijkeZetten) {
       doeZet(zet.first, zet.second);
+      //Elke keer de score * -1 zodat 
+      //de tegenstander ook zo goed mogelijk speelt
       scores.push_back(-1 * berekenBesteScore(besteZet, aantalStanden));
       unDoeZet();
     }
 
+    //Zoekt de zet met de hoogste score
     for (int i = 0; i < int(scores.size()); i++) {
       if (scores[i] > score) {
         score = scores[i];
@@ -525,6 +569,9 @@ int TegelSpel::berekenBesteScore(pair<int,char> &besteZet, long long &aantalStan
   return score;
 }
 
+//*************************************************************************
+
+//Returnt pointer naar spelers bord met als input de spelers getal
 vector<pair<int, int>>* TegelSpel::getSpeler(int speler) {
   if (speler == 1) {
     return &speler1;
@@ -533,17 +580,23 @@ vector<pair<int, int>>* TegelSpel::getSpeler(int speler) {
     return &speler2;
   }
 
+  //Als input =/= 1 en =/= 2
   return nullptr;
 }
 
+//*************************************************************************
+
+//Kijkt naar het bord en returnt de score vanaf de inputs perspectief
 int TegelSpel::getScore(int speler) {
   int score = 0;
   
+  //Loopt door alle rijen en checkt of ze vol zitten
   for (pair<int, int>& rij : getInhoudRijen(speler)) {
     if (rij.first == L || rij.second == L) {
       score++;
     }
   }
+  //De tegenstanders volle rijen tellen als minpunten
   for (pair<int, int>& rij : getInhoudRijen(toggleBeurt(speler))) {
     if (rij.first == L || rij.second == L) {
       score--;
@@ -552,7 +605,3 @@ int TegelSpel::getScore(int speler) {
 
   return score;
 }
-
-//Comments afmaken
-//Namen en studentennummers bovenaan .cc en .h
-//spel2.txt maken 1 miljard

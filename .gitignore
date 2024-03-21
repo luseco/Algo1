@@ -2,3 +2,5 @@
 *.o
 TegelSpel
 .vs
+spel*
+!spel2.txt
