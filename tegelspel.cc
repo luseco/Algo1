@@ -209,12 +209,16 @@ bool TegelSpel::doeZet (int schaal, char kleur) {
   //haalt tegels weg uit schaal en hervult de schaal
   int i = 0;
   for (pair<int, int>& rij : *speler) {
-    if (kleur == 'g' && schalen[schaal].first <= L - rij.first && rij.second == 0) {
+    if (kleur == 'g' && schalen[schaal].first <= L - rij.first && 
+        rij.second == 0) {
+
       geschiedenis.push_back({schalen[schaal], schaal, pot, rij, i});
       rij.first += schalen[schaal].first;
       schalen[schaal].first = 0;
       break;
-    } else if (kleur == 'b' && schalen[schaal].second <= L - rij.second && rij.first == 0) {
+    } else if (kleur == 'b' && schalen[schaal].second <= L - rij.second && 
+               rij.first == 0) {
+                
       geschiedenis.push_back({schalen[schaal], schaal, pot, rij, i});
       rij.second += schalen[schaal].second;
       schalen[schaal].second = 0;
@@ -259,7 +263,8 @@ bool TegelSpel::unDoeZet () {
 
 //Algoritme om de beste score te vinden door te brute forcen
 //Dit wordt gebruikt als wrapper-functie
-int TegelSpel::besteScore (pair<int,char> &besteZet, long long &aantalStanden) {
+int TegelSpel::besteScore (pair<int,char> &besteZet, 
+                           long long &aantalStanden) {
   aantalStanden = 0;
   //Default zet
   besteZet = make_pair(-1, ' ');
@@ -293,7 +298,8 @@ pair<int,char> TegelSpel::bepaalGoedeZet (int nrSimulaties) {
       //Doet random zetten
       while (!eindstand()) {
         vector<pair<int, char>> simZetten = alleZetten();
-        pair<int, char> randomZet = simZetten[randomGetal(0, simZetten.size() - 1)];
+        pair<int, char> randomZet = simZetten[randomGetal(0, 
+                                              simZetten.size() - 1)];
         doeZet(randomZet.first, randomZet.second);
         nSimZetten++;
       }
