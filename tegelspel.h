@@ -135,7 +135,7 @@ class TegelSpel
     // * de stand in het spel is nog onveranderd
     int besteScore (pair<int,char> &besteZet, long long &aantalStanden);
 
-    // Bepaal een `goede zet' voor de speler die in de huidige stand aan
+    // Bepaal een `goede zet' voor de speler die in de huidige stand
     // aan de beurt is: een zet die ertoe leidt dat hij (na deze ene zet)
     // met nrSimulaties keer random uitspelen een zo hoog mogelijke
     // gemiddelde score haalt.
@@ -170,22 +170,29 @@ class TegelSpel
 
   private:
     string pot; //De pot
-    int M, N, L, K; //Speldata: n Schalen, n per Schaal, n rijen, n per rij
-    int beurt; //Welke speler aan de beurt is
+    int M, N, K, L; //Speldata: n Schalen, n per Schaal, n rijen, n per rij
+    int beurt; //Welke speler aan de beurt is; 1 OF 2
 
-    int *pars[4] = {&M, &N, &K, &L}; //Array van pointers naar speldata
     const int maxPars[4] = {MaxSchalen, MaxPerSchaal, MaxRijen, MaxPerRij}; //Array van Max. waarden
 
     vector<pair<int, int>> speler1, speler2; //De velden van de spelers
-    vector<string> schalen; //Vector van de schalen
+    vector<pair<int, int>> schalen; //Vector van de schalen
     
-    vector<pair<int, int>> inhoudSchalen = getInhoudSchalen();
-    vector<pair<int, int>> inhoudRijen = getInhoudRijen(beurt);
-    int getschalen = getSchalen();
-    
+    struct zet {
+      pair<int, int> schaalOud;
+      int schaal;
+      string potOud;
+      pair<int, int> rijOud;
+      int rij;
+    };
+    vector<zet> geschiedenis; //Alle zetten die zijn gedaan
 
     bool checkFormat(const char* invoernaam);
-    string sortSchaal(string schaal); //-> Laat het alle schalen sorteren
+    pair<int, int> countTegels(string Tegels);
+    vector<pair<int, char>> alleZetten();
+    void vulAan(int schaal);
+    int toggleBeurt();
+    int berekenBesteScore(pair<int,char> &besteZet, long long &aantalStanden);
 };
 
 #endif

@@ -1,18 +1,16 @@
-// Implementatie van klasse TegelSpel
-
 #include "tegelspel.h"
 #include "standaard.h"
-#include <fstream>   // voor inlezen van spel
+#include <fstream>
 #include <iostream>
 #include <set>
 
 //*************************************************************************
 
-TegelSpel::TegelSpel () {}  // default constructor
+TegelSpel::TegelSpel () {}
 
 //*************************************************************************
 
-int TegelSpel::getSchalen () { //joelle
+int TegelSpel::getSchalen () {
   return M;
 }
 
@@ -20,49 +18,36 @@ int TegelSpel::getSchalen () { //joelle
 
 string TegelSpel::getPot () {
   return pot;
-}  // getPot
+}
 
 //*************************************************************************
 
-vector< pair <int,int> > TegelSpel::getInhoudSchalen () { //test
-  vector<pair<int, int>> inhoudSchalen;
-  
-  for (string& schaal : schalen) {
-    int g = 0, b = 0;
-    for (char& c : schaal) {
-      if (c == 'g') {
-        g++;
-      }
-      else {
-        b++;
-      }
-    }
-    inhoudSchalen.push_back(make_pair(g, b));
-  }
-
-  return inhoudSchalen;
-}  // getInhoudSchalen
+vector< pair <int,int> > TegelSpel::getInhoudSchalen () {
+  return schalen;
+}
 
 //*************************************************************************
 
 vector<pair<int, int>> TegelSpel::getInhoudRijen (int speler) {
-  vector<pair<int, int>> inhoudRijen;
-
+  vector<pair<int, int>> empty;
+  
   if (speler == 1) {
     return speler1;
   }
   if (speler == 2) {
     return speler2;
   }
-
-  return inhoudRijen;
-}  // getInhoudRijen
+  
+  return empty;
+}
 
 //*************************************************************************
 
 bool TegelSpel::leesInSpel (const char* invoernaam) {
   ifstream invoer;
   string regel;
+  int links, rechts;
+  vector<pair<int, int>> *speler;
 
   if (!checkFormat(invoernaam)) { //Checkt de format van het bestand
     return false;
@@ -72,282 +57,238 @@ bool TegelSpel::leesInSpel (const char* invoernaam) {
   getline(invoer, regel);
   pot = regel; //Leest de pot in
 
-  for (int i = 0; i < 4; i++) { //Leest de data van het spel in
-    invoer >> *pars[i];
-  }
+  invoer >> M >> N >> K >> L; //Leest de data van het spel in
 
   for (int i = 0; i < M; i++) { //Vult de schalen met de inhoud van de pot
-    schalen.push_back(pot.substr(0, N)); //!!!doet rare dingen wanneer pot te klein
-    schalen[i] = sortSchaal(schalen[i]);
-    pot.erase(0, N);
+    schalen.push_back(make_pair(0, 0));
+    vulAan(i); 
   }
 
-  getline(invoer, regel);
-  for (int i = 0; i < K; i++) { //Leest de velden van speler 1 in
-    getline(invoer, regel);
-    speler1.push_back(make_pair(regel[0] - '0', regel[2] - '0'));
+  speler = &speler1;
+  for (int i = 0; i < 2; i++){
+    for (int j = 0; j < K; j++) { //Leest de velden van speler 1 in
+      invoer >> links >> rechts;
+      (*speler).push_back(make_pair(links, rechts));
+    }
+    speler = &speler2;
   }
-  for (int i = 0; i < K; i++) { //Leest de velden van speler 2 in
-    getline(invoer, regel);
-    speler2.push_back(make_pair(regel[0] - '0', regel[2] - '0'));
-  }
+
   invoer >> beurt; //Leest welke speler aan de beurt is in
-  beurt++;
+  beurt++; //Corrigeert wie aan de beurt is
 
   invoer.close();
   return true;
-}  // leesInSpel
+}
 
 //*************************************************************************
 
-bool TegelSpel::eindstand () { //joelle
+bool TegelSpel::eindstand () {
+  if (alleZetten().empty()) {
+    return true;
+  }
 
-for (pair <int,int> rij : inhoudRijen) {
-    if (( rij.first == K || rij.second == K) ||
-        (rij.first > K|| rij.second > K))
-        return true;
-}//for
-
-for  (pair <int,int> schaal :inhoudSchalen) {
-    if (schaal.first == '0' && schaal.second == '0'){
-        return true;
-    }
-}//for 
-
-return false;
-} // eindstand
+  return false;
+}
 
 //*************************************************************************
 
 void TegelSpel::drukAf () {
-  if (!isspace(pot[0])) {
-    cout << "Pot: " << pot << endl;
-  }
-  else {
-    cout << "Pot: Leeg" << endl;
-  }
-
+  cout << endl << string(23, '=') << endl;
+  cout << "Pot: " << pot << endl;
   int i = 0;
   cout << "Schalen:" << endl;
-  for (string& schaal : schalen) {
-    cout <<i++ << ": " << sortSchaal(schaal) << "  ";
+  for (pair<int, int> schaal : schalen) {
+    cout <<i++ << ": " << string(schaal.first, 'g') 
+         << string(schaal.second, 'b') << "  ";
   }
 
   cout << "\n\n" << "   Speler 1    Speler 2" << endl
                  << "   --------    --------" << endl;
   for (int j = 0; j < K; j++) {
-    cout << j + 1 << "| " 
+    cout << j << "| " 
          << string(speler1[j].first, 'g') 
          << string(speler1[j].second, 'b')
-         << string(K - speler1[j].first - speler1[j].second, '#')
-         << string(MaxPerRij - K + 6, ' ');
+         << string(L - speler1[j].first - speler1[j].second, '#')
+         << string(MaxPerRij - L + 6, ' ');
     cout << string(speler2[j].first, 'g') 
          << string(speler2[j].second, 'b') 
-         << string(K - speler2[j].first - speler2[j].second, '#') << endl;
+         << string(L - speler2[j].first - speler2[j].second, '#') << endl;
   }
 
   cout << endl << "Aan de beurt: Speler " << beurt << endl;
-}  // drukAf
+  cout << string(23, '=') << endl;
+}
 
 //*************************************************************************
 
-vector< pair<int,char> > TegelSpel::bepaalVerschillendeZetten () { //joelle
-    vector <int> schaal;
-    vector<int> temp;
-    vector <int> temp2;
-    vector<pair<int, char>> zetten;
-    vector<pair<int, int>> inhoudSchalen = getInhoudSchalen();
-    vector<pair<int, int>> inhoudRijen = getInhoudRijen(beurt);
-    int getschalen = getSchalen();
-    bool geldig_g =false, geldig_b= false;
-    bool verschillend = false;
+vector< pair<int,char> > TegelSpel::bepaalVerschillendeZetten () {
+  vector<pair<int, char>> zetten, mogelijkeZetten = alleZetten();
+  vector<pair<int, char>> tegelsZetten;
 
-    for (int i = 0; i < getschalen; ++i) {
-        for (int j = i + 1; j < getschalen; ++j) {
-            if (inhoudSchalen[i].first == inhoudSchalen[j].first && inhoudSchalen[i].second == inhoudSchalen[j].second) {
-                schaal.push_back(i);
-                verschillend = true;
-            }
-        }
+  for (pair<int, char>& zet : mogelijkeZetten) {
+    int tegels = 0;
+    
+    if (zet.second == 'g') {
+      tegels = schalen[zet.first].first;
+    } else if (zet.second == 'b') {
+      tegels = schalen[zet.first].second;
     }
-
-    for (int i = 0; i < getschalen; ++i) {
-    int found_b = false, found_g = false;
-    for (pair<int, int> rij : inhoudRijen) {
-        if (((rij.second == 0 && inhoudSchalen[i].first != 0 && rij.first + inhoudSchalen[i].first <= K) || (rij.second == 0 && rij.first == 0)) && !found_g) {
-            geldig_g = true, found_g = true;
-            if ( !verschillend){
-                temp.push_back(i);
-            }
-        }
-        if (((rij.first == 0 && inhoudSchalen[i].second != 0 && rij.second + inhoudSchalen[i].second <= K) || (rij.second == 0 && rij.first == 0)) && !found_b) {
-            geldig_b = true, found_b = true;
-             if ( !verschillend){
-                temp2.push_back(i);
-            }
-        }
-        if (found_b && found_g)
-            break;
-    }
-}
-
-cout<< " "<< endl;
-for ( const auto & num : schaal){
-cout<< num<<endl;
-}
-
-    for (int & i : schaal) {
-        if (geldig_g) zetten.push_back(make_pair(i, 'g'));
-        if (geldig_b) zetten.push_back(make_pair(i, 'b'));
-    }if (geldig_g) {
-        for (int & j : temp) zetten.push_back(make_pair(j, 'g'));
-    }if (geldig_b ) {
-        for (int & k : temp2) zetten.push_back(make_pair(k, 'b'));
-    }
-
-    return zetten;
-
-}
-//*************************************************************************
-
-bool TegelSpel::doeZet (int schaal, char kleur) {
-  bool geldig = true;
-  pair<int, char> zet = make_pair(schaal, kleur);
-
-  if (schaal < 0 || schaal >= M) {
-    geldig = false;
-    cout << endl << "Schaal bestaat niet.";
+    
+    tegelsZetten.push_back(make_pair(tegels, zet.second));
   }
-  else if (schalen[schaal].find(kleur) == string::npos) {
-    geldig = false;
-    cout << endl << "Geen geldige kleur.";
-  }
-  else {
-    for (pair<int, char>& mogelijk : bepaalVerschillendeZetten()) {
-      geldig = false;
-      if (zet == mogelijk) {
-        geldig = true;
+
+  for (int i = 0; i < int(mogelijkeZetten.size()); i++) {
+    bool identiek = false;
+
+    for (int j = 0; j < i; j++) {
+      if (tegelsZetten[i].first == tegelsZetten[j].first && 
+          tegelsZetten[i].second == tegelsZetten[j].second) {
+        identiek = true;
         break;
       }
+    }
+
+    if (!identiek) {
+      zetten.push_back(mogelijkeZetten[i]);
+    }
+  }
+
+  return zetten;
+}
+//*************************************************************************
+
+bool TegelSpel::doeZet (int schaal, char kleur) { //6 lines te lang
+  bool geldig = false;
+  vector<pair<int, int>>* speler;
+
+  for (pair<int, char>& mogelijk : alleZetten()) {
+    geldig = false;
+    if (make_pair(schaal, kleur) == mogelijk) {
+      geldig = true;
+      break;
     }
   }
   
   if (!geldig) {
-    return geldig;
+    return false;
   }
-  int nTegelsZet = 0;
-  int offset = 0;
-
-  for (char& tegel : schalen[schaal]) {
-    if (tegel == kleur) {
-      nTegelsZet++;
-    }
-  }
-
-  if (kleur == 'b') {
-    offset = schalen[schaal].find('b');
-  }
-
-  schalen[schaal].erase(offset, nTegelsZet);
-  schalen[schaal].append(pot.substr(0, nTegelsZet));
-  schalen[schaal] = sortSchaal(schalen[schaal]);
-  pot.erase(0, nTegelsZet);
 
   if (beurt == 1) {
-    beurt = 2;
-    for (pair<int, int>& rij : speler1) {
-      if (kleur == 'g' && nTegelsZet <= K - rij.first && rij.second == 0) {
-        rij.first += nTegelsZet;
-        break;
-      }
-      if (kleur == 'b' && nTegelsZet <= K - rij.second && rij.first == 0) {
-        rij.second += nTegelsZet;
-        break;
-      }
-    }
-  } else {
-    beurt = 1;
-    for (pair<int, int>& rij : speler2) {
-      if (kleur == 'g' && nTegelsZet <= K - rij.first && rij.second == 0) {
-        rij.first += nTegelsZet;
-        break;
-      }
-      if (kleur == 'b' && nTegelsZet <= K - rij.second && rij.first == 0) {
-        rij.second += nTegelsZet;
-        break;
-      }
-    }
+    speler = &speler1;
+  }
+  else {
+    speler = &speler2;
   }
 
-  //moet nog op een stack voor unDoeZet
-  return geldig;
-}  // doeZet
-
-//*************************************************************************
-
-bool TegelSpel::unDoeZet () { //ibraheem 
-  // TODO: implementeer deze memberfunctie
+  int i = 0;
+  for (pair<int, int>& rij : *speler) { //probeer door schalen ints te swappen
+    if (kleur == 'g' && schalen[schaal].first <= L - rij.first && rij.second == 0) {
+      geschiedenis.push_back({schalen[schaal], schaal, pot, rij, i});
+      rij.first += schalen[schaal].first;
+      schalen[schaal].first = 0;
+      break;
+    } else if (kleur == 'b' && schalen[schaal].second <= L - rij.second && rij.first == 0) {
+      geschiedenis.push_back({schalen[schaal], schaal, pot, rij, i});
+      rij.second += schalen[schaal].second;
+      schalen[schaal].second = 0;
+      break;
+    }
+    i++;
+  }
+  vulAan(schaal);
+  beurt = toggleBeurt();
 
   return true;
-
-}  // unDoeZet
-
-//*************************************************************************
-
-int TegelSpel::besteScore (pair<int,char> &besteZet,
-                             long long &aantalStanden) { //ibraheem
-  // TODO: implementeer deze memberfunctie
-
-// Bepaal met behulp van brute force en recursie de eindscore voor
-    // de speler die in de huidige stand (= de stand van de huidige
-    // recursieve aanroep) aan de beurt is, wanneer beide spelers vanaf
-    // dit punt optimaal verder spelen.
-    // De score is gelijk aan het aantal volle rijen van de speler min
-    // het aantal volle rijen van de andere speler.
-    // Post:
-    // * als de huidige stand geen eindstand was, bevat parameter
-    //   besteZet een paar (schaal,kleur) dat de huidige speler
-    //   in de eerstvolgende zet moet kiezen, om de beste score te bereiken
-    // * anders bevat parameter besteZet een passende default waarde
-    // * aantalStanden is gelijk aan het aantal standen dat we hebben
-    //   bekeken bij het bepalen van de beste eindscore
-    // * de stand in het spel is nog onveranderd
-  return 0;
-
-}  // besteScore
+}
 
 //*************************************************************************
 
-pair<int,char> TegelSpel::bepaalGoedeZet (int nrSimulaties) { //joelle
-    pair<int,char> goedeZet;
+bool TegelSpel::unDoeZet () {
+  if (!geschiedenis.empty()) {
+    vector<pair<int, int>>* speler;    
+
+    beurt = toggleBeurt();
+
+    if (beurt == 1) {
+      speler = &speler1;
+    }
+    else {
+      speler = &speler2;
+    }
+
+    (*speler)[geschiedenis.back().rij] = geschiedenis.back().rijOud;
+    schalen[geschiedenis.back().schaal] = geschiedenis.back().schaalOud;
+    pot = geschiedenis.back().potOud;
+
+    geschiedenis.pop_back();
+
+    return true;
+  } else {
+    return false;
+  }
+}
+
+//*************************************************************************
+
+int TegelSpel::besteScore (pair<int,char> &besteZet, long long &aantalStanden) {
+  aantalStanden = 0;
+  besteZet = make_pair(-1, ' ');
+  
+  return berekenBesteScore(besteZet, aantalStanden);
+}
+
+//*************************************************************************
+
+pair<int,char> TegelSpel::bepaalGoedeZet (int nrSimulaties) {
+  pair<int,char> goedeZet;
   
 
-  return goedeZet;
 
-}  // bepaalGoedeZet
+
+
+  return goedeZet;
+}
 
 //*************************************************************************
 
-int TegelSpel::bepaalGoedeScore () { //ibraheem
-  // TODO: implementeer deze memberfunctie
+int TegelSpel::bepaalGoedeScore () {
+  vector<pair<int, int>> *goedeSpeler, *besteSpeler;
+
+  if (beurt == 1) {
+    goedeSpeler = &speler1;
+    besteSpeler = &speler2;
+  } else if (beurt == 2) {
+    goedeSpeler = &speler2;
+    besteSpeler = &speler1;
+  }
 
   return 0;
-
-}  // bepaalGoedeScore
-
-//*************************************************************************
-
-void TegelSpel::doeExperiment () { //ibraheem
-  // TODO: implementeer deze memberfunctie
-
-}  // doeExperiment
+}
 
 //*************************************************************************
 
-bool TegelSpel::checkFormat(const char* invoernaam) {//Checkt de format van een bestand
+void TegelSpel::doeExperiment () {
+  while(!eindstand()) {
+    pair<int, char> goedeZet = bepaalGoedeZet(NrSimulaties);
+    doeZet(goedeZet.first, goedeZet.second);
+  }
+
+  while(!geschiedenis.empty()) {
+    pair<int,char> besteZet;
+    long long aantalStanden;
+
+    unDoeZet();
+    besteScore(besteZet, aantalStanden);
+  }
+}
+
+//*************************************************************************
+
+bool TegelSpel::checkFormat(const char* invoernaam) { //Checkt de format van een bestand //te lang
   ifstream invoer;
   string regel;
-  int getal;
+  int getal, links, rechts;
+  int parameters[4];
 
   invoer.open(invoernaam);
   if (!invoer) { //Checkt of het bestand opent/bestaat
@@ -361,37 +302,137 @@ bool TegelSpel::checkFormat(const char* invoernaam) {//Checkt de format van een 
     }
   }
 
+  invoer >> parameters[0] >> parameters[1] >> parameters[2] >> parameters[3];
   for (int i = 0; i < 4; i++) { //Checkt of speldata de max. waarden overschreidt
-    invoer >> getal;
-    if (getal < 1 || getal > maxPars[i]) {
+    if (parameters[i] < 1 || parameters[i] > maxPars[i]) {
       return false;
     }
   }
 
-  for (int i = 0; i < 0; i++) { //Checkt of data van de spelers klopt
-    break;
+  for (int i = 0; i < parameters[2] * 2; i++) { //Checkt of data van de spelers klopt
+    invoer >> links >> rechts;
+    if ((links != 0 && rechts != 0) || (links < 0 || links > parameters[3]) || 
+        (rechts < 0 || rechts > parameters[3])) {
+      return false;
+    }
+  }
+  
+  invoer >> getal;
+  if (getal != 0 && getal != 1) {
+    return false;
   }
 
-  //Checkt of het klopt wie aan de beurt is
-  //Checkt of het bestand eindigt
-
+  invoer.close();
   return true;
 }
 
-string TegelSpel::sortSchaal(string schaal) {
-  string sorted = "";
+pair<int, int > TegelSpel::countTegels(string Tegels) {
   int g = 0, b = 0;
-
-  for (char& c : schaal) {
-    if (c == 'g') {
-      g++;
-    }
-    else {
-      b++;
+  
+  for (char& tegel : Tegels) {
+    if (tegel == 'g') {
+        g++;
+    } else if (tegel == 'b') {
+        b++;
     }
   }
 
-  sorted.append(g, 'g');
-  sorted.append(b, 'b');
-  return sorted;
+  return make_pair(g, b);
 }
+ 
+void TegelSpel::vulAan(int schaal) {
+  int vrij = min(N - schalen[schaal].first - schalen[schaal].second, int(pot.size()));
+  pair<int, int> aanvulling = countTegels(pot.substr(0, vrij));
+  
+  schalen[schaal].first += aanvulling.first;
+  schalen[schaal].second += aanvulling.second;
+
+  pot.erase(0, vrij);
+}
+
+vector<pair<int, char>> TegelSpel::alleZetten() {
+  vector<pair<int, char>> zetten;
+  vector<pair<int, int>> speler = getInhoudRijen(beurt);
+  int gMax = 0, bMax = 0;
+
+  for (pair<int, int>& rij : speler) {
+    int gVrij = 0, bVrij = 0;
+    
+    if (rij.second == 0) {
+      gVrij = L - rij.first;
+    }
+    if (rij.first == 0) {
+      bVrij = L - rij.second;
+    }
+    
+    if (gVrij > gMax) {
+      gMax = gVrij;
+    }
+    if (bVrij > bMax) {
+      bMax = bVrij;
+    }
+  }
+
+  for (int i = 0; i < M; i++) {
+    if (schalen[i].first <= gMax && schalen[i].first > 0) {
+      zetten.push_back(make_pair(i, 'g'));
+    }
+    if (schalen[i].second <= bMax && schalen[i].second > 0) {
+      zetten.push_back(make_pair(i, 'b'));
+    }
+  }
+
+  return zetten;
+}
+
+int TegelSpel::toggleBeurt() {
+  if (beurt == 1) {
+    return 2;
+  } 
+  if (beurt == 2) {
+    return 1;
+  }
+  return 0;
+}
+
+int TegelSpel::berekenBesteScore(pair<int,char> &besteZet, long long &aantalStanden) {
+  int score = 0;
+  vector<pair<int, char>> mogelijkeZetten = alleZetten();
+  vector<int> scores;
+
+  if (eindstand()) {
+    aantalStanden++;
+
+    for (pair<int, int>& rij : getInhoudRijen(beurt)) {
+      if (rij.first == L || rij.second == L) {
+        score++;
+      }
+    }
+    for (pair<int, int>& rij : getInhoudRijen(toggleBeurt())) {
+      if (rij.first == L || rij.second == L) {
+        score--;
+      }
+    }
+  } else {
+    for (pair<int, char>& zet : mogelijkeZetten) {
+      doeZet(zet.first, zet.second);
+      scores.push_back(-1 * berekenBesteScore(besteZet, aantalStanden));
+      unDoeZet();
+    }
+
+    score = scores[0];
+    besteZet = mogelijkeZetten[0];
+    for (int i = 1; i < int(scores.size()); i++) {
+      if (scores[i] > score) {
+        score = scores[i];
+        besteZet = mogelijkeZetten[i];
+      }
+    }
+  }
+
+  return score;
+}
+
+//Check alle functie lengtes
+//Comments
+//Test wanneer pot klein wordt
