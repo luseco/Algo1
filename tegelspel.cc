@@ -196,7 +196,7 @@ bool TegelSpel::doeZet (int schaal, char kleur) { //6 lines te lang
     i++;
   }
   vulAan(schaal);
-  beurt = toggleBeurt();
+  beurt = toggleBeurt(beurt);
 
   return true;
 }
@@ -207,7 +207,7 @@ bool TegelSpel::unDoeZet () {
   if (!geschiedenis.empty()) {
     vector<pair<int, int>>* speler;    
 
-    beurt = toggleBeurt();
+    beurt = toggleBeurt(beurt);
 
     if (beurt == 1) {
       speler = &speler1;
@@ -240,11 +240,42 @@ int TegelSpel::besteScore (pair<int,char> &besteZet, long long &aantalStanden) {
 //*************************************************************************
 
 pair<int,char> TegelSpel::bepaalGoedeZet (int nrSimulaties) {
-  pair<int,char> goedeZet;
+  pair<int,char> goedeZet = make_pair(-1, ' ');
+  vector<pair<int, char>> mogelijkeZetten = alleZetten();
+  vector<double> gemScores;
+  int goedeSpeler = beurt;
+  double highscore = MaxRijen * -1;
+
+  for (pair<int, char>& zet : mogelijkeZetten) {
+    int score = 0;
+    doeZet(zet.first, zet.second);
+
+    for (int i = 0; i < nrSimulaties; i++) {
+      int nSimZetten = 0;
+
+      while (!eindstand()) {
+        vector<pair<int, char>> simZetten = alleZetten();
+        pair<int, char> randomZet = simZetten[randomGetal(0, simZetten.size() - 1)];
+        doeZet(randomZet.first, randomZet.second);
+        nSimZetten++;
+      }
+
+      score += getScore(goedeSpeler);
+      for (int i = 0; i < nSimZetten; i++) {
+        unDoeZet();
+      }
+    }
+    unDoeZet();
+    gemScores.push_back(double(score) / nrSimulaties);
+  }
+
   
-
-
-
+  for (int i = 0; i < int(gemScores.size()); i++) {
+    if (gemScores[i] > highscore) {
+      highscore = gemScores[i];
+      goedeZet = mogelijkeZetten[i];
+    }
+  }
 
   return goedeZet;
 }
@@ -252,22 +283,40 @@ pair<int,char> TegelSpel::bepaalGoedeZet (int nrSimulaties) {
 //*************************************************************************
 
 int TegelSpel::bepaalGoedeScore () {
-  vector<pair<int, int>> *goedeSpeler, *besteSpeler;
-
-  if (beurt == 1) {
-    goedeSpeler = &speler1;
-    besteSpeler = &speler2;
-  } else if (beurt == 2) {
-    goedeSpeler = &speler2;
-    besteSpeler = &speler1;
+  int nZetten = 0;
+  int goedeSpelerBeurt = beurt;
+  int score;
+  
+  while(!eindstand()) {
+    if (beurt == goedeSpelerBeurt) {
+      pair<int, char> zet = bepaalGoedeZet(NrSimulaties);
+      
+      doeZet(zet.first, zet.second);
+    } else {
+      pair<int, char> zet;
+      long long aantalStanden;
+      
+      besteScore(zet, aantalStanden);
+      doeZet(zet.first, zet.second);
+    }
+    nZetten++;
   }
 
-  return 0;
+  score = getScore(goedeSpelerBeurt);
+
+  for (int i = 0; i < int(nZetten); i++) {
+    unDoeZet();
+  }
+
+  return score;
 }
 
 //*************************************************************************
 
 void TegelSpel::doeExperiment () {
+  clock_t t1, t2;
+  int undone = 0;
+  
   while(!eindstand()) {
     pair<int, char> goedeZet = bepaalGoedeZet(NrSimulaties);
     doeZet(goedeZet.first, goedeZet.second);
@@ -278,7 +327,14 @@ void TegelSpel::doeExperiment () {
     long long aantalStanden;
 
     unDoeZet();
+    undone++;
+
+    t1 = clock ();
     besteScore(besteZet, aantalStanden);
+    t2 = clock ();
+
+    cout << undone << " undo('s): " << aantalStanden << " Stand(en) in "
+         <<  (((double)(t2-t1))/CLOCKS_PER_SEC) << " seconden." << endl;
   }
 }
 
@@ -385,34 +441,25 @@ vector<pair<int, char>> TegelSpel::alleZetten() {
   return zetten;
 }
 
-int TegelSpel::toggleBeurt() {
-  if (beurt == 1) {
+int TegelSpel::toggleBeurt(int curBeurt) {
+  if (curBeurt == 1) {
     return 2;
   } 
-  if (beurt == 2) {
+  if (curBeurt == 2) {
     return 1;
   }
   return 0;
 }
 
 int TegelSpel::berekenBesteScore(pair<int,char> &besteZet, long long &aantalStanden) {
-  int score = 0;
+  int score = MaxRijen * -1;
   vector<pair<int, char>> mogelijkeZetten = alleZetten();
   vector<int> scores;
 
   if (eindstand()) {
     aantalStanden++;
 
-    for (pair<int, int>& rij : getInhoudRijen(beurt)) {
-      if (rij.first == L || rij.second == L) {
-        score++;
-      }
-    }
-    for (pair<int, int>& rij : getInhoudRijen(toggleBeurt())) {
-      if (rij.first == L || rij.second == L) {
-        score--;
-      }
-    }
+    score = getScore(beurt);
   } else {
     for (pair<int, char>& zet : mogelijkeZetten) {
       doeZet(zet.first, zet.second);
@@ -420,13 +467,39 @@ int TegelSpel::berekenBesteScore(pair<int,char> &besteZet, long long &aantalStan
       unDoeZet();
     }
 
-    score = scores[0];
-    besteZet = mogelijkeZetten[0];
-    for (int i = 1; i < int(scores.size()); i++) {
+    for (int i = 0; i < int(scores.size()); i++) {
       if (scores[i] > score) {
         score = scores[i];
         besteZet = mogelijkeZetten[i];
       }
+    }
+  }
+
+  return score;
+}
+
+vector<pair<int, int>>* TegelSpel::getSpeler(int speler) {
+  if (speler == 1) {
+    return &speler1;
+  }
+  if (speler == 2) {
+    return &speler2;
+  }
+
+  return nullptr;
+}
+
+int TegelSpel::getScore(int speler) {
+  int score = 0;
+  
+  for (pair<int, int>& rij : getInhoudRijen(speler)) {
+    if (rij.first == L || rij.second == L) {
+      score++;
+    }
+  }
+  for (pair<int, int>& rij : getInhoudRijen(toggleBeurt(speler))) {
+    if (rij.first == L || rij.second == L) {
+      score--;
     }
   }
 

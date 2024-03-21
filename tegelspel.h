@@ -191,8 +191,10 @@ class TegelSpel
     pair<int, int> countTegels(string Tegels);
     vector<pair<int, char>> alleZetten();
     void vulAan(int schaal);
-    int toggleBeurt();
+    int toggleBeurt(int curBeurt);
     int berekenBesteScore(pair<int,char> &besteZet, long long &aantalStanden);
+    vector<pair<int, int>>* getSpeler(int beurt);
+    int getScore(int speler);
 };
 
 #endif
